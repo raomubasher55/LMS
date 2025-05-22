@@ -9,7 +9,7 @@ const FilterCards = ({ courses }) => {
     >
       {courses?.length ? (
         courses.slice(0, 6).map((course, idx) => (
-          <CourseCard key={idx} idx={idx} course={course} />
+          <CourseCard key={idx} idx={idx} course={course} instructor={course?.instructor} />
         ))
       ) : (
         <span>No courses found.</span>

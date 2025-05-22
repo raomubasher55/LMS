@@ -1,14 +1,14 @@
 import BlogContactForm from "../blogs/BlogContactForm";
 import BlogSocials from "../blogs/BlogSocials";
 import BlogTags from "../blogs/BlogTags";
-import CourseEnroll from "../course-details/CourseEnroll";
+import CourseEnrollWithPayment from "../course-details/CourseEnrollWithPayment";
 import PopularCoursesMini from "../course-details/PopularCoursesMini";
 
 const CourseDetailsSidebar = ({ type, course }) => {
   return (
     <div className="flex flex-col">
       {/* enroll section  */}
-      <CourseEnroll type={type} course={course} />
+      <CourseEnrollWithPayment course={course} />
 
       {/* social area  */}
       <BlogSocials />

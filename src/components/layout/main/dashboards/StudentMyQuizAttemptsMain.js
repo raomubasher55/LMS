@@ -1,3 +1,4 @@
+"use client";
 import StudentMyQuizPrimary from "@/components/sections/sub-section/dashboards/StudentMyQuizPrimary";
 import React from "react";
 

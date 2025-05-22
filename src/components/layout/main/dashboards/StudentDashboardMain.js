@@ -1,12 +1,10 @@
-import AdminFeedbacks from "@/components/sections/sub-section/dashboards/AdminFeedbacks";
-import CounterStudent from "@/components/sections/sub-section/dashboards/CounterStudent";
 import React from "react";
+import StudentDashboardOverview from "@/components/sections/sub-section/dashboards/StudentDashboardOverview";
 
 const StudentDashboardMain = () => {
   return (
     <>
-      <CounterStudent />
-      <AdminFeedbacks />
+      <StudentDashboardOverview />
     </>
   );
 };

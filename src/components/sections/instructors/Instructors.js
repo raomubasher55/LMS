@@ -57,7 +57,7 @@ const Instructors = () => {
               </p>
 
               <div>
-                <ButtonPrimary path="#" color="secondary" arrow={true} href="#">
+                <ButtonPrimary path="/register" color="secondary" arrow={true} href="/register">
                   Become an Instructor
                 </ButtonPrimary>
               </div>

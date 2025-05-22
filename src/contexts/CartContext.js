@@ -21,16 +21,27 @@ const CartContextProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchCartData = async () => {
+      const token = getToken();
+      if (!token) {
+        console.log("No token found — skipping cart fetch");
+        return;
+      }
+  
       try {
-        const { data } = await axiosInstance.get("/api/cart");
-        setCartProducts(data.cart?.products || []);
+        const { data } = await axiosInstance.get("/api/cart", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCartProducts(data.cart?.courses || []);
       } catch (error) {
         console.error("Error fetching cart data:", error);
       }
     };
+  
     fetchCartData();
-    getToken()
-  },[]);
+  }, []);
+  
 
   const addProductToCart = async (newCourse, isDecrement = false, isTotalQuantity = false) => {
     try {

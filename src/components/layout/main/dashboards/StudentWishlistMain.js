@@ -1,8 +1,8 @@
-import Wishlist from "@/components/shared/dashboards/Wishlist";
 import React from "react";
+import StudentWishlistCourses from "@/components/sections/sub-section/dashboards/StudentWishlistCourses";
 
 const StudentWishlistMain = () => {
-  return <Wishlist />;
+  return <StudentWishlistCourses />;
 };
 
 export default StudentWishlistMain;

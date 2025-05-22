@@ -107,7 +107,7 @@ const CourseCard2 = ({ course, card, isList, isNotSidebar }) => {
                 src={image}
                 alt=""
                 className="w-full transition-all duration-300 scale-105 group-hover:scale-110 -mb-1"
-                placeholder="blur"
+                unoptimized
               />
             </Link>
             <div className="absolute left-0 top-1 flex justify-between w-full items-center px-2">
@@ -201,6 +201,9 @@ const CourseCard2 = ({ course, card, isList, isNotSidebar }) => {
                         className="w-[30px] h-[30px] rounded-full mr-15px"
                         src={insImg}
                         alt=""
+                        width={30}
+                        height={30}
+                        unoptimized
                       />
                       <span className="flex">{insName}</span>
                     </Link>

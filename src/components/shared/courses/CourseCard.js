@@ -24,7 +24,6 @@ const CourseCard = ({ course, instructor, type, role }) => {
     language,
   } = course;
 
-  console.log(course)
   // Calculate if course is free
   const isFree = offerType === "free";
 
@@ -110,6 +109,7 @@ const CourseCard = ({ course, instructor, type, role }) => {
                   height={225}
                   className="w-full h-auto transition-all duration-300 group-hover:scale-110"
                   unoptimized
+                  priority
                 />
               )}
             </Link>
@@ -236,6 +236,7 @@ const CourseCard = ({ course, instructor, type, role }) => {
                         alt={insName}
                         width={30}
                         height={30}
+                        unoptimized
                       />
                     )}
                     <span className="whitespace-nowrap">

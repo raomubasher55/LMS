@@ -24,19 +24,11 @@ const LoginForm = () => {
     setError("");
 
     try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
-        {
-          emailOrUsername: formData.emailOrUsername,
-          password: formData.password,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }
-      );
-      
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
+        emailOrUsername: formData.emailOrUsername,
+        password: formData.password
+      });
+
       if (response.data.success) {
         // Store token based on remember me choice
         if (formData.rememberMe) {
@@ -67,6 +59,7 @@ const LoginForm = () => {
     } catch (err) {
       setLoading(false);
       if (err.response) {
+        console.log(err.response)
         const errorMessage = err.response.data?.message || 
                            (err.response.data?.error?.message || 
                            "Login failed. Please try again.");

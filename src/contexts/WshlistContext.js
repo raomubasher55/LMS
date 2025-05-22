@@ -60,9 +60,9 @@ const WishlistContextProvider = ({ children }) => {
       });
 
       setWishlistProducts(res.data.wishlist);
-      creteAlert("success", "Deleted from wishlist.");
+      createAlert("success", "Deleted from wishlist.");
     } catch (err) {
-      creteAlert("error", "Failed to delete.");
+      createAlert("error", "Failed to delete.");
     }
   };
 

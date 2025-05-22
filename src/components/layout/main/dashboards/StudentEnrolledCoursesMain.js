@@ -1,8 +1,8 @@
-import StudentEnrolledCourses from "@/components/sections/sub-section/dashboards/StudentEnrolledCourses";
+import EnrolledCoursesNew from "@/components/sections/sub-section/dashboards/EnrolledCoursesNew";
 import React from "react";
 
 const StudentEnrolledCoursesMain = () => {
-  return <StudentEnrolledCourses />;
+  return <EnrolledCoursesNew />;
 };
 
 export default StudentEnrolledCoursesMain;

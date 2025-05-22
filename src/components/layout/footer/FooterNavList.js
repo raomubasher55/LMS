@@ -1,9 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import FooterNavItems from "./FooterNavItems";
 import FooterAbout from "./FooterAbout";
 import FooterRecentPosts from "./FooterRecentPosts";
 
 const FooterNavList = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allcourses`);
+        const courses = response.data.data || [];
+        
+        // Extract unique categories
+        const uniqueCategories = [...new Set(
+          courses
+            .map(course => course.category)
+            .filter(category => category) // Remove undefined/null categories
+        )];
+        
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        setCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const lists = [
     {
       heading: "Usefull Links",
@@ -32,28 +61,14 @@ const FooterNavList = () => {
     },
     {
       heading: "Course",
-      items: [
-        {
-          name: "Ui Ux Design",
-          path: "#",
-        },
-        {
-          name: "Web Development",
-          path: "#",
-        },
-        {
-          name: "Business Strategy",
-          path: "#",
-        },
-        {
-          name: "Softwere Development",
-          path: "#",
-        },
-        {
-          name: "Business English",
-          path: "#",
-        },
-      ],
+      items: loading 
+        ? [
+            { name: "Loading...", path: "#" }
+          ]
+        : categories.slice(0, 5).map(category => ({
+            name: category,
+            path: `/courses?category=${encodeURIComponent(category)}`
+          }))
     },
   ];
 

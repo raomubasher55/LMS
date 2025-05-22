@@ -10,6 +10,7 @@ import FilterCards from "@/components/shared/courses/FilterCards";
 
 const CoursesFilter = () => {
   const [courses, setCourses] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("all");
 
@@ -17,7 +18,24 @@ const CoursesFilter = () => {
     const fetchCourses = async () => {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allcourses`);
-        setCourses(res.data.data || []);
+        const coursesData = res.data.data || [];
+        setCourses(coursesData);
+        
+        // Calculate category counts
+        const categoryCounts = {};
+        coursesData.forEach(course => {
+          if (course.category) {
+            categoryCounts[course.category] = (categoryCounts[course.category] || 0) + 1;
+          }
+        });
+
+        // Sort categories by count (descending) and take top 4
+        const sortedCategories = Object.entries(categoryCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 4)
+          .map(([category]) => category);
+
+        setCategories(sortedCategories);
       } catch (err) {
         console.error("Failed to fetch courses", err);
       } finally {
@@ -31,7 +49,9 @@ const CoursesFilter = () => {
   const filteredCourses =
     selectedCategory === "all"
       ? courses
-      : courses.filter(course => course.category?.toLowerCase() === selectedCategory);
+      : courses.filter(course => 
+          course.category?.toLowerCase() === selectedCategory.toLowerCase()
+        );
 
   return (
     <section>
@@ -48,9 +68,11 @@ const CoursesFilter = () => {
             </div>
 
             {/* courses right */}
-            <FilterControllerWrapper>
-              <FilterController setSelectedCategory={setSelectedCategory} />
-            </FilterControllerWrapper>
+              <FilterController 
+                categories={categories}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory} 
+              />
           </div>
 
           {/* Course Cards */}

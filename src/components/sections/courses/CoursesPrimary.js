@@ -7,10 +7,10 @@ import Pagination from "@/components/shared/others/Pagination";
 import TabContentWrapper from "@/components/shared/wrappers/TabContentWrapper";
 import useTab from "@/hooks/useTab";
 import { useEffect, useRef, useState } from "react";
-import getAllCourses from "@/libs/getAllCourses";
 import Image from "next/image";
 import Link from "next/link";
 import NoData from "@/components/shared/others/NoData";
+import axios from "axios";
 const sortInputs = [
   "Sort by New",
   "Title Ascending",
@@ -18,118 +18,60 @@ const sortInputs = [
   "Price Ascending",
   "Price Descending",
 ];
-const coursesBeforeFilter = getAllCourses();
-const getFilteredCoursesLength = (filterkey, filterValue) => {
-  const filteredCoursesLength = coursesBeforeFilter?.filter(
-    (course) => course[filterkey] === filterValue
-  )?.length;
-  return filteredCoursesLength;
-};
-const filterIputs = [
-  {
-    name: "Categories",
-    inputs: [
-      {
-        name: "Art & Design",
-        totalCount: getFilteredCoursesLength("categories", "Art & Design"),
-      },
-      {
-        name: "Development",
-        totalCount: getFilteredCoursesLength("categories", "Development"),
-      },
-      {
-        name: "Lifestyle",
-        totalCount: getFilteredCoursesLength("categories", "Lifestyle"),
-      },
-      {
-        name: "Web Design",
-        totalCount: getFilteredCoursesLength("categories", "Web Design"),
-      },
-      {
-        name: "Business",
-        totalCount: getFilteredCoursesLength("categories", "Business"),
-      },
-      {
-        name: "Finance",
-        totalCount: getFilteredCoursesLength("categories", "Finance"),
-      },
-      {
-        name: "Personal Development",
-        totalCount: getFilteredCoursesLength(
-          "categories",
-          "Personal Development"
-        ),
-      },
-      {
-        name: "Marketing",
-        totalCount: getFilteredCoursesLength("categories", "Marketing"),
-      },
-      {
-        name: "Photography",
-        totalCount: getFilteredCoursesLength("categories", "Photography"),
-      },
-      {
-        name: "Data Science",
-        totalCount: getFilteredCoursesLength("categories", "Data Science"),
-      },
-      {
-        name: "Health & Fitness",
-        totalCount: getFilteredCoursesLength("categories", "Health & Fitness"),
-      },
-      {
-        name: "Mobile Application",
-        totalCount: getFilteredCoursesLength(
-          "categories",
-          "Mobile Application"
-        ),
-      },
-    ],
-  },
-  {
-    name: "Tag",
-    inputs: [
-      "Mechanic",
-      "English",
-      "Computer Science",
-      "Data & Tech",
-      "Ux Desgin",
-    ],
-  },
-  {
-    name: "Skill Level",
-    inputs: ["All", "Fullstack", "English Learn", "Intermediate", "Wordpress"],
-  },
-];
-// get all filtered courses
-const getAllFilteredCourses = (filterableCourses, filterObject) => {
-  const { currentCategories, currentTags, currentSkillLevel } = filterObject;
-  const filteredCourses = filterableCourses?.filter(
-    ({ categories, tag, skillLevel }) =>
-      (!currentCategories?.length || currentCategories.includes(categories)) &&
-      (!currentTags?.length || currentTags?.includes(tag)) &&
-      (!currentSkillLevel?.length ||
-        currentSkillLevel?.includes("All") ||
-        currentSkillLevel?.includes(skillLevel))
-  );
-  return filteredCourses;
-};
-// get sorted courses
-const getSortedCourses = (courses, sortInput) => {
-  switch (sortInput) {
-    case "Sort by New":
-      return courses?.sort((a, b) => a?.date - b?.date);
-    case "Title Ascending":
-      return courses?.sort((a, b) => a?.title?.localeCompare(b?.title));
-    case "Title Descending":
-      return courses?.sort((a, b) => b?.title?.localeCompare(a?.title));
-    case "Price Ascending":
-      return courses?.sort((a, b) => a?.price - b?.price);
-    case "Price Descending":
-      return courses?.sort((a, b) => b?.price - a?.price);
-  }
-};
+
+
 const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
+    const [coursesBeforeFilter, setCoursesBeforeFilter] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filterInputs, setFilterInputs] = useState([]);
   const category = useSearchParams().get("category");
+console.log(coursesBeforeFilter)
+    // Fetch courses from API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allcourses`);
+        const coursesData = response.data.data || [];
+        setCoursesBeforeFilter(coursesData);
+        
+        // Generate filter inputs from API data
+        const categoryCounts = {};
+        coursesData.forEach(course => {
+          if (course.category) {
+            categoryCounts[course.category] = (categoryCounts[course.category] || 0) + 1;
+          }
+        });
+
+        const categoriesFilter = {
+          name: "Categories",
+          inputs: Object.entries(categoryCounts).map(([name, totalCount]) => ({
+            name,
+            totalCount
+          }))
+        };
+
+        setFilterInputs([
+          categoriesFilter,
+          {
+            name: "Tag",
+            inputs: ["Mechanic", "English", "Computer Science", "Data & Tech", "Ux Design"]
+          },
+          {
+            name: "Skill Level",
+            inputs: ["All", "Fullstack", "English Learn", "Intermediate", "Wordpress"]
+          }
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+
   const [currentCategories, setCurrentCategories] = useState([]);
   const [currentTags, setCurrentTags] = useState([]);
   const [currentSkillLevel, setCurrentSkillLevel] = useState([]);
@@ -149,38 +91,58 @@ const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
     currentTags,
     currentSkillLevel,
   };
-  const coursesOnCategory = coursesBeforeFilter?.filter(({ categories }) =>
-    categories.toLocaleLowerCase()?.includes(category?.split("_")?.join(" "))
+
+  const coursesOnCategory = category 
+    ? coursesBeforeFilter.filter(({ category: courseCategory }) => 
+        courseCategory?.toLowerCase() === category.toLowerCase()
+      )
+    : coursesBeforeFilter;
+
+
+  const getAllFilteredCourses = (filterableCourses, filterObject) => {
+    const { currentCategories, currentTags, currentSkillLevel } = filterObject;
+    return filterableCourses?.filter(
+      ({ category, tag, skillLevel }) =>
+        (!currentCategories?.length || currentCategories.includes(category)) &&
+        (!currentTags?.length || currentTags?.includes(tag)) &&
+        (!currentSkillLevel?.length ||
+          currentSkillLevel?.includes("All") ||
+          currentSkillLevel?.includes(skillLevel))
+    );
+  };
+
+  const allFilteredCourses = getAllFilteredCourses(coursesOnCategory, filterObject);
+
+    const getSortedCourses = (courses, sortInput) => {
+    if (!courses) return [];
+    switch (sortInput) {
+      case "Sort by New":
+        return [...courses].sort((a, b) => new Date(b.date) - new Date(a.date));
+      case "Title Ascending":
+        return [...courses].sort((a, b) => a?.title?.localeCompare(b?.title));
+      case "Title Descending":
+        return [...courses].sort((a, b) => b?.title?.localeCompare(a?.title));
+      case "Price Ascending":
+        return [...courses].sort((a, b) => a?.price - b?.price);
+      case "Price Descending":
+        return [...courses].sort((a, b) => b?.price - a?.price);
+      default:
+        return courses;
+    }
+  };
+
+    const courses = getSortedCourses(
+    isSearch ? searchCourses : allFilteredCourses,
+    sortInput
   );
-  console.log(category);
-  const allFilteredCourses = category
-    ? getAllFilteredCourses(coursesOnCategory, filterObject)
-    : getAllFilteredCourses(coursesBeforeFilter, filterObject);
-  const courses = category
-    ? getSortedCourses(isSearch ? searchCourses : allFilteredCourses, sortInput)
-    : getSortedCourses(
-        isSearch ? searchCourses : allFilteredCourses,
-        sortInput
-      );
-  const coursesString = JSON.stringify(courses);
+
+    const coursesString = JSON.stringify(courses);
   const totalCourses = courses?.length;
   const limit = 12;
   const totalPages = Math.ceil(totalCourses / limit);
   const paginationItems = [...Array(totalPages)];
-  const handlePagesnation = (id) => {
-    coursesRef.current.scrollIntoView({ behavior: "smooth" });
-    if (typeof id === "number") {
-      setCurrentPage(id);
-      setSkip(limit * id);
-    } else if (id === "prev") {
-      setCurrentPage(currentPage - 1);
-      setSkip(skip - limit);
-    } else if (id === "next") {
-      setCurrentPage(currentPage + 1);
-      setSkip(skip + limit);
-    }
-    // const currentButton = e?.target;
-  };
+
+  
   const tapButtons = [
     {
       name: <i className="icofont-layout"></i>,
@@ -200,12 +162,13 @@ const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
       ),
     },
   ];
-  useEffect(() => {
-    const courses = JSON.parse(coursesString);
 
+    useEffect(() => {
+    const courses = JSON.parse(coursesString);
     const coursesToShow = [...courses].splice(skip, limit);
     setCurrentCourses(coursesToShow);
   }, [skip, limit, coursesString]);
+
 
   useEffect(() => {
     if (isList) {
@@ -241,6 +204,31 @@ const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
     const value = e.target.value;
     setSearchString(value.toLowerCase());
   };
+  
+  // Function to handle pagination
+  const handlePagesnation = (idx) => {
+    if (idx === "prev") {
+      if (skip > 0) {
+        setSkip((prev) => prev - limit);
+        setCurrentPage((prev) => prev - 1);
+      }
+    } else if (idx === "next") {
+      if (skip + limit < totalCourses) {
+        setSkip((prev) => prev + limit);
+        setCurrentPage((prev) => prev + 1);
+      }
+    } else {
+      setSkip(idx * limit);
+      setCurrentPage(idx);
+    }
+    
+    if (coursesRef.current) {
+      coursesRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
   // start search
   const startSearch = () => {
     serarchTimeoutRef.current = setTimeout(() => {
@@ -266,6 +254,12 @@ const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
         className="container tab py-10 md:py-50px lg:py-60px 2xl:py-100px"
         ref={coursesRef}
       >
+                {category && (
+          <h1 className="text-2xl font-bold mb-6">
+            {decodeURIComponent(category)} Courses
+          </h1>
+        )}
+
         {/* courses header  */}
         <div
           className="courses-header flex justify-between items-center flex-wrap px-13px py-5px border border-borderColor dark:border-borderColor-dark mb-30px gap-y-5"
@@ -362,18 +356,19 @@ const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
                       >
                         {[...searchCourses]
                           ?.slice(0, 5)
-                          .map(({ id, title, image, price }, idx) => (
+                          .map(({ id, title,bannerImage , price }, idx) => (
                             <li
                               key={idx}
                               className="relative flex gap-x-1.5 items-center"
                             >
                               <Link href={`/courses/${id}`}>
                                 <Image
-                                  prioriy="false"
-                                  placeholder="blur"
-                                  src={image}
+                                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${bannerImage}`}
                                   alt="photo"
+                                  width={40}
+                                  height={40}
                                   className="w-12 py-[3px]"
+                                  unoptimized
                                 />
                               </Link>
                               <div>
@@ -400,49 +395,32 @@ const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
                   </form>
                 </div>
                 {/* categories  */}
-                {filterIputs?.map(({ name, inputs }, idx) => (
-                  <div
-                    key={idx}
-                    className="pt-30px pr-15px pl-10px pb-23px 2xl:pt-10 2xl:pr-25px 2xl:pl-5 2xl:pb-33px mb-30px border border-borderColor dark:border-borderColor-dark"
-                    data-aos="fade-up"
-                  >
-                    <h4 className="text-size-22 text-blackColor dark:text-blackColor-dark font-bold leading-30px mb-15px">
-                      {name}
-                    </h4>
-                    <ul
-                      className={`flex flex-col  ${
-                        name === "Categories"
-                          ? "gap-y-4"
-                          : name === "Tag"
-                          ? "gap-y-23px"
-                          : "gap-y-10px"
-                      }`}
-                    >
-                      {name === "Categories"
-                        ? inputs?.map(({ name: name2, totalCount }, idx1) => (
-                            <li key={idx1}>
-                              {" "}
-                              <button
-                                onClick={() => handleFilters(name, name2)}
-                                className={`${
-                                  currentCategories.includes(name2)
-                                    ? "bg-primaryColor text-contentColor-dark "
-                                    : "text-contentColor  dark:text-contentColor-dark hover:text-contentColor-dark hover:bg-primaryColor "
-                                } text-sm font-medium px-13px py-2 border border-borderColor dark:border-borderColor-dark flex justify-between leading-7 transition-all duration-300 w-full`}
-                              >
-                                <span>
-                                  {name2?.length > 18
-                                    ? name2.slice(0, 12) + "."
-                                    : name2}
-                                </span>{" "}
-                                <span>
-                                  {totalCount < 10
-                                    ? `0${totalCount}`
-                                    : totalCount}
-                                </span>
-                              </button>
-                            </li>
-                          ))
+        {filterInputs?.map(({ name, inputs }, idx) => (
+          <div key={idx} className="pt-30px pr-15px pl-10px pb-23px 2xl:pt-10 2xl:pr-25px 2xl:pl-5 2xl:pb-33px mb-30px border border-borderColor dark:border-borderColor-dark" data-aos="fade-up">
+            <h4 className="text-size-22 text-blackColor dark:text-blackColor-dark font-bold leading-30px mb-15px">
+              {name}
+            </h4>
+            <ul className={`flex flex-col ${name === "Categories" ? "gap-y-4" : name === "Tag" ? "gap-y-23px" : "gap-y-10px"}`}>
+              {name === "Categories" 
+                ? inputs?.map(({ name: name2, totalCount }, idx1) => (
+                    <li key={idx1}>
+                      <button
+                        onClick={() => handleFilters(name, name2)}
+                        className={`${
+                          currentCategories.includes(name2)
+                            ? "bg-primaryColor text-contentColor-dark "
+                            : "text-contentColor dark:text-contentColor-dark hover:text-contentColor-dark hover:bg-primaryColor "
+                        } text-sm font-medium px-13px py-2 border border-borderColor dark:border-borderColor-dark flex justify-between leading-7 transition-all duration-300 w-full`}
+                      >
+                        <span>
+                          {name2?.length > 18 ? name2.slice(0, 12) + "..." : name2}
+                        </span>
+                        <span>
+                          {totalCount < 10 ? `0${totalCount}` : totalCount}
+                        </span>
+                      </button>
+                    </li>
+                  ))
                         : name === "Tag"
                         ? inputs?.map((input, idx1) => (
                             <li

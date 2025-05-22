@@ -5,7 +5,6 @@ import blogImage7 from "@/assets/images/blog/blog_7.png";
 import { useCartContext } from "@/contexts/CartContext";
 
 const CourseEnroll = ({ type, course }) => {
-  console.log(course);
   const { addProductToCart } = useCartContext();
   const {} = course;
   const image = `${process.env.NEXT_PUBLIC_BACKEND_URL}${course?.bannerImage}`;

@@ -12,7 +12,17 @@ const ConversatonSingle = ({ details }) => {
           ""
         ) : (
           <div className="w-15 h-15 mr-5 flex-shrink">
-            <Image src={image} alt="" className="w-full" placeholder="blur" />
+            {image ? (
+              <Image 
+                src={image} 
+                alt="" 
+                className="w-full rounded-full" 
+                width={60} 
+                height={60} 
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-300 rounded-full"></div>
+            )}
           </div>
         )}
         {/* details */}
@@ -36,7 +46,17 @@ const ConversatonSingle = ({ details }) => {
         </div>
         {isCurrentUser ? (
           <div className="w-15 h-15 flex-shrink">
-            <Image src={image} alt="" className="w-full" placeholder="blur" />
+            {image ? (
+              <Image 
+                src={image} 
+                alt="" 
+                className="w-full rounded-full" 
+                width={60} 
+                height={60} 
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-300 rounded-full"></div>
+            )}
           </div>
         ) : (
           ""
