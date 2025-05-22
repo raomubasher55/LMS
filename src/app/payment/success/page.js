@@ -3,23 +3,30 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { Suspense } from "react";
 import PageWrapper from "@/components/shared/wrappers/PageWrapper";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 
-const PaymentSuccess = () => {
+const PaymentSuccessContent = () => {
   const [status, setStatus] = useState('loading'); // loading, success, error
   const [message, setMessage] = useState('');
   const [course, setCourse] = useState(null);
+  const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    if (sessionId) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && sessionId) {
       handlePaymentVerification();
-    } else {
+    } else if (mounted && !sessionId) {
       setStatus('error');
       setMessage('Invalid payment session');
     }
-  }, [sessionId]);
+  }, [sessionId, mounted]);
 
   const handlePaymentVerification = async () => {
     try {
@@ -41,6 +48,24 @@ const PaymentSuccess = () => {
       setMessage('Failed to verify payment. Please contact support.');
     }
   };
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <PageWrapper>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+          <div className="max-w-md w-full mx-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primaryColor mx-auto mb-4"></div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                Loading...
+              </h2>
+            </div>
+          </div>
+        </div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>
@@ -137,6 +162,31 @@ const PaymentSuccess = () => {
         </div>
       </div>
     </PageWrapper>
+  );
+};
+
+const LoadingFallback = () => (
+  <PageWrapper>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-md w-full mx-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primaryColor mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Loading Payment Status...
+          </h2>
+        </div>
+      </div>
+    </div>
+  </PageWrapper>
+);
+
+const PaymentSuccess = () => {
+  return (
+    <ErrorBoundary fallbackMessage="There was an error processing your payment verification. Please contact support if you completed a payment.">
+      <Suspense fallback={<LoadingFallback />}>
+        <PaymentSuccessContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

@@ -51,8 +51,8 @@ const PopularCoursesMini = () => {
               <div className="w-[91px] h-auto mr-5 flex-shrink-0">
                 <Link href={`/courses/${course._id}`} className="w-full">
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${course.bannerImage}` || courseDetailsImage6} // fallback image if needed
-                    alt={course.title}
+                    src={course.bannerImage ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${course.bannerImage}` : courseDetailsImage6}
+                    alt={course.title || "Course"}
                     width={91}
                     height={91}
                     className="w-full h-full"

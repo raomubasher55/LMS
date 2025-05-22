@@ -112,7 +112,20 @@ const CourseLearnMain = ({ courseId }) => {
 
   const handleQuizCompleted = (chapterId, score) => {
     console.log('Quiz completed:', chapterId, score);
-    // Refresh course progress
+    
+    // If quiz passed with 60% or higher, show success message about unlocking next chapter
+    if (score >= 60) {
+      const currentChapterIndex = course?.chapters?.findIndex(ch => ch._id === chapterId);
+      const nextChapter = course?.chapters?.[currentChapterIndex + 1];
+      
+      if (nextChapter) {
+        createAlert('success', `Great job! You've unlocked the next chapter: "${nextChapter.title}"`);
+      } else {
+        createAlert('success', 'Congratulations! You\'ve completed all chapters in this course!');
+      }
+    }
+    
+    // Refresh course progress to update UI
     fetchCourseProgress();
   };
 
@@ -331,6 +344,7 @@ const CourseLearnMain = ({ courseId }) => {
                         return chapter?.quiz || [];
                       })()}
                       onQuizCompleted={handleQuizCompleted}
+                      progressData={progressData}
                     />
                   ) : (
                     <div className="quiz-no-video bg-gray-50 p-6 rounded-lg text-center">

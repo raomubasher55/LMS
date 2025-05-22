@@ -65,7 +65,7 @@ const StudentMyQuizPrimary = () => {
           </div>
           <div className="alert alert-danger" role="alert">
             <h4 className="alert-heading">Error Loading Quiz Attempts</h4>
-            <p>{error}</p>
+            <p>{typeof error === 'string' ? error : error?.message || 'An error occurred'}</p>
             <button 
               className="btn btn-outline-danger btn-sm"
               onClick={fetchAllQuizAttempts}

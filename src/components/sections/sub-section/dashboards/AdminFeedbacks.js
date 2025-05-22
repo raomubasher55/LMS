@@ -105,8 +105,8 @@ const AdminFeedbacks = () => {
       <div className="p-10px md:px-10 md:py-50px mb-30px bg-whiteColor dark:bg-whiteColor-dark shadow-accordion dark:shadow-accordion-dark rounded-5 max-h-137.5 overflow-auto">
         <HeadingDashboard path="/courses">Total Feedbacks</HeadingDashboard>
         <div className="text-red-500 p-4">
-          {error}
-          {error.includes("Authentication") && (
+          {typeof error === 'string' ? error : error?.message || 'An error occurred'}
+          {(typeof error === 'string' ? error : error?.message || '').includes("Authentication") && (
             <Link
               href="/admin/login"
               className="block mt-2 text-blue-500 hover:underline"

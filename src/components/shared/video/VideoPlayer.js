@@ -35,6 +35,7 @@ const VideoPlayer = ({ videoUrl, title, poster, courseId, chapterId, onVideoComp
     }
   };
 
+
   // Function to mark video as completed
   const markVideoCompleted = async () => {
     if (!courseId || !chapterId || hasMarkedComplete) return;
@@ -51,6 +52,9 @@ const VideoPlayer = ({ videoUrl, title, poster, courseId, chapterId, onVideoComp
 
       if (response.data.success) {
         setHasMarkedComplete(true);
+        
+        // Also mark as re-watched for quiz restrictions
+        
         if (onVideoCompleted) {
           onVideoCompleted(chapterId, response.data.data);
         }

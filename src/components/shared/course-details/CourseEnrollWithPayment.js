@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import PopupVideo from "../popup/PopupVideo";
 import axios from "axios";
@@ -14,6 +15,7 @@ const CourseEnrollWithPayment = ({ course }) => {
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [showPayment, setShowPayment] = useState(false);
   const createAlert = useSweetAlert();
+  const router = useRouter();
 
   // Add defensive checks
   if (!course) {
@@ -84,7 +86,9 @@ const CourseEnrollWithPayment = ({ course }) => {
         createAlert('success', 'Successfully enrolled in free course!');
         setHasAccess(true);
         // Redirect to lesson or dashboard
-        window.location.href = '/dashboards/student-dashboard';
+        setTimeout(() => {
+          router.push('/dashboards/student-dashboard');
+        }, 1500);
       }
     } catch (error) {
       console.error('Free enrollment error:', error);
@@ -125,7 +129,7 @@ const CourseEnrollWithPayment = ({ course }) => {
 
   const handleStartLearning = () => {
     // Redirect to course learning page
-    window.location.href = `/course/${course._id}/learn`;
+    router.push(`/course/${course._id}/learn`);
   };
 
   const getTotalDuration = (totalSeconds) => {

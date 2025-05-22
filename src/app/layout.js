@@ -9,8 +9,17 @@ import "swiper/css/pagination";
 import "swiper/css/effect-cards";
 import "./globals.css";
 import FixedShadow from "@/components/shared/others/FixedShadow";
-import PreloaderPrimary from "@/components/shared/others/PreloaderPrimary";
+import dynamic from "next/dynamic";
 import { SocketProvider } from "@/contexts/SocketContext";
+import Script from "next/script";
+
+const PreloaderPrimary = dynamic(
+  () => import("@/components/shared/others/PreloaderPrimary"),
+  { 
+    ssr: false,
+    loading: () => <div className="preloader-fallback" />
+  }
+);
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -36,6 +45,11 @@ export default function RootLayout({ children }) {
       <body
         className={`relative leading-[1.8] bg-bodyBg dark:bg-bodyBg-dark z-0  ${inter.className}`}
       >
+        <Script
+          src="/js/chunk-error-handler.js"
+          strategy="beforeInteractive"
+          id="chunk-error-handler"
+        />
         <SocketProvider>
           <PreloaderPrimary />
           {children}
