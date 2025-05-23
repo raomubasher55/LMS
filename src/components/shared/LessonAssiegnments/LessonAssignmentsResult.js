@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import AssignmentSubmissions from "../assignments/AssignmentSubmissions";
 
 const LessonAssignmentsResult = ({ courseId }) => {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingAssignment, setEditingAssignment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewingSubmissions, setViewingSubmissions] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -93,6 +95,11 @@ const LessonAssignmentsResult = ({ courseId }) => {
     setIsModalOpen(true);
   };
 
+  // Open submissions view
+  const openSubmissionsView = (assignment) => {
+    setViewingSubmissions(assignment);
+  };
+
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -171,14 +178,21 @@ const LessonAssignmentsResult = ({ courseId }) => {
                   <td className="px-4 py-3">
                     <div className="flex space-x-2">
                       <button
+                        onClick={() => openSubmissionsView(assignment)}
+                        className="px-3 py-1 bg-blue-500 text-whiteColor rounded hover:bg-opacity-90 transition text-xs"
+                        title="View student submissions"
+                      >
+                        View Submissions
+                      </button>
+                      <button
                         onClick={() => openEditModal(assignment)}
-                        className="px-3 py-1 bg-primaryColor text-whiteColor rounded hover:bg-opacity-90 transition"
+                        className="px-3 py-1 bg-primaryColor text-whiteColor rounded hover:bg-opacity-90 transition text-xs"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(assignment._id)}
-                        className="px-3 py-1 bg-secondaryColor text-whiteColor rounded hover:bg-opacity-90 transition"
+                        className="px-3 py-1 bg-secondaryColor text-whiteColor rounded hover:bg-opacity-90 transition text-xs"
                       >
                         Delete
                       </button>
@@ -274,6 +288,15 @@ const LessonAssignmentsResult = ({ courseId }) => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Assignment Submissions Modal */}
+      {viewingSubmissions && (
+        <AssignmentSubmissions
+          assignmentId={viewingSubmissions._id}
+          assignmentTitle={viewingSubmissions.title}
+          onClose={() => setViewingSubmissions(null)}
+        />
       )}
     </div>
   );

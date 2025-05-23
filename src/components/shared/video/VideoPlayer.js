@@ -11,6 +11,8 @@ const VideoPlayer = ({ videoUrl, title, poster, courseId, chapterId, onVideoComp
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [watchTimeUpdateInterval, setWatchTimeUpdateInterval] = useState(null);
   const [hasMarkedComplete, setHasMarkedComplete] = useState(false);
+  const [videoError, setVideoError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Function to update watch time on backend
   const updateWatchTime = async (watchTime, totalDuration) => {
@@ -84,6 +86,22 @@ const VideoPlayer = ({ videoUrl, title, poster, courseId, chapterId, onVideoComp
 
     const handleDurationChange = () => {
       setDuration(video.duration);
+      setIsLoading(false);
+    };
+
+    const handleLoadStart = () => {
+      setIsLoading(true);
+      setVideoError(null);
+    };
+
+    const handleCanPlay = () => {
+      setIsLoading(false);
+    };
+
+    const handleError = (e) => {
+      console.error('Video error:', e);
+      setVideoError('Failed to load video. Please check if the video file exists and is in a supported format.');
+      setIsLoading(false);
     };
 
     const handlePlay = () => {
@@ -124,6 +142,9 @@ const VideoPlayer = ({ videoUrl, title, poster, courseId, chapterId, onVideoComp
     video.addEventListener('durationchange', handleDurationChange);
     video.addEventListener('play', handlePlay);
     video.addEventListener('pause', handlePause);
+    video.addEventListener('loadstart', handleLoadStart);
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('error', handleError);
     video.addEventListener('ended', handleEnded);
 
     return () => {
@@ -131,6 +152,9 @@ const VideoPlayer = ({ videoUrl, title, poster, courseId, chapterId, onVideoComp
       video.removeEventListener('durationchange', handleDurationChange);
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
+      video.removeEventListener('loadstart', handleLoadStart);
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('error', handleError);
       video.removeEventListener('ended', handleEnded);
       
       if (watchTimeUpdateInterval) {
@@ -290,9 +314,23 @@ const VideoPlayer = ({ videoUrl, title, poster, courseId, chapterId, onVideoComp
       </div>
 
       {/* Loading State */}
-      {!duration && (
+      {isLoading && !videoError && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {videoError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/75 text-white p-4">
+          <div className="text-center">
+            <svg className="w-16 h-16 mx-auto mb-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <h3 className="text-lg font-semibold mb-2">Video Load Error</h3>
+            <p className="text-sm text-gray-300">{videoError}</p>
+            <p className="text-xs text-gray-400 mt-2">Video URL: {getVideoSource()}</p>
+          </div>
         </div>
       )}
     </div>

@@ -64,7 +64,10 @@ const CourseProgress = ({ course, currentVideoId, progressData }) => {
           <div className="progress-bar w-full bg-gray-200 rounded-full h-3">
             <div 
               className="progress-fill bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              style={{ 
+                width: `${progress}%`,
+                background: progress > 0 ? 'linear-gradient(to right, #3b82f6, #2563eb)' : 'transparent'
+              }}
             ></div>
           </div>
         </div>

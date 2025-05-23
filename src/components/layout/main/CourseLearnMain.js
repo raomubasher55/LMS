@@ -239,7 +239,7 @@ const CourseLearnMain = ({ courseId }) => {
             {currentVideo ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
                 <VideoPlayer
-                  videoUrl={`${process.env.NEXT_PUBLIC_BACKEND_URL}${currentVideo.url}`}
+                  videoUrl={`${process.env.NEXT_PUBLIC_BACKEND_URL}${encodeURI(currentVideo.url)}`}
                   title={currentVideo.title}
                   poster={course.bannerImage ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${course.bannerImage}` : null}
                   courseId={courseId}
@@ -361,7 +361,11 @@ const CourseLearnMain = ({ courseId }) => {
                 )}
                 
                 {activeTab === 'resources' && (
-                  <CourseResources course={course} />
+                  <CourseResources 
+                    course={course} 
+                    progressData={progressData}
+                    courseId={courseId}
+                  />
                 )}
               </div>
             </div>

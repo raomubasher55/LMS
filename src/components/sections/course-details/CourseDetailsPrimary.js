@@ -12,6 +12,7 @@ import axios from "axios";
 const CourseDetailsPrimary = ({ id: courseId, type }) => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [progressData, setProgressData] = useState(null);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -27,8 +28,27 @@ const CourseDetailsPrimary = ({ id: courseId, type }) => {
       }
     };
 
+    const fetchCourseProgress = async () => {
+      try {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        if (!token) return;
+
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/progress/course/${courseId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.data.success) {
+          setProgressData(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching course progress:', error);
+      }
+    };
+
     if (courseId) {
       fetchCourse();
+      fetchCourseProgress();
     }
   }, [courseId]);
   if (loading) {
@@ -277,7 +297,7 @@ const CourseDetailsPrimary = ({ id: courseId, type }) => {
                 </>
 
                 {/* course tab  */}
-                <CourseDetailsTab course={course} type={type} />
+                <CourseDetailsTab course={course} type={type} progressData={progressData} />
 
                 <div className="md:col-start-5 md:col-span-8 mb-5">
                   <h4

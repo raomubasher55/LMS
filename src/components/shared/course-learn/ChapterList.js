@@ -15,7 +15,7 @@ const ChapterList = ({ course, currentVideoId, onVideoSelect, compact = false, p
     const quizAttempt = progressData?.quizProgress?.find(
       quiz => quiz.chapterId === chapterId && quiz.courseId === course?._id
     );
-    return quizAttempt && quizAttempt.score >= 60;
+    return quizAttempt && (quizAttempt.passed || quizAttempt.bestScore >= 60);
   };
 
   const isChapterAccessible = (chapterIndex) => {
@@ -26,6 +26,12 @@ const ChapterList = ({ course, currentVideoId, onVideoSelect, compact = false, p
     const previousChapter = course?.chapters?.[chapterIndex - 1];
     if (!previousChapter) return false;
     
+    // If previous chapter has no quiz, it's automatically considered "passed"
+    if (!previousChapter.quiz || previousChapter.quiz.length === 0) {
+      return true;
+    }
+    
+    // If previous chapter has a quiz, check if it was passed
     return isChapterQuizPassed(previousChapter._id);
   };
 

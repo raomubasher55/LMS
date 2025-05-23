@@ -46,7 +46,7 @@ const CourseProgressCard = ({ course, onUpdateProgress, onMarkCompleted }) => {
         {/* Progress Bar */}
         <div className="w-full h-2 bg-gray-200 dark:bg-gray-700">
           <div 
-            className="h-full bg-primaryColor" 
+            className="h-full bg-gradient-to-r from-blue-500 to-blue-600" 
             style={{ width: `${progress}%` }}
           ></div>
         </div>

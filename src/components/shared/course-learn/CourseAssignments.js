@@ -92,6 +92,14 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
       });
 
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      if (!token) {
+        createAlert('error', 'Please login to submit assignment');
+        return;
+      }
+
+      console.log('Submitting assignment:', assignmentId);
+      console.log('Files count:', files.length);
+      
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/submissions/${assignmentId}/submit`,
         formData,
@@ -103,6 +111,8 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
         }
       );
 
+      console.log('Assignment submission response:', response.data);
+
       if (response.data.success) {
         createAlert('success', 'Assignment submitted successfully!');
         fetchSubmissions();
@@ -111,19 +121,50 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
           [assignmentId]: null
         }));
         onAssignmentSubmitted && onAssignmentSubmitted(assignmentId);
+      } else {
+        createAlert('error', response.data.message || 'Failed to submit assignment');
       }
     } catch (error) {
       console.error('Error submitting assignment:', error);
-      createAlert('error', 'Failed to submit assignment');
+      
+      let errorMessage = 'Failed to submit assignment';
+      if (error.response) {
+        console.error('Response error:', error.response.data);
+        errorMessage = error.response.data.message || `Server Error: ${error.response.status}`;
+      } else if (error.request) {
+        console.error('Request error:', error.request);
+        errorMessage = 'Network error - please check your connection';
+      } else {
+        console.error('General error:', error.message);
+        errorMessage = error.message;
+      }
+      
+      createAlert('error', errorMessage);
     }
   };
 
   const getSubmissionStatus = (assignmentId) => {
-    return submissions.find(sub => sub.assignment === assignmentId);
+    const submissionData = submissions.find(sub => {
+      const subAssignmentId = sub.assignment?._id || sub.assignment;
+      return subAssignmentId === assignmentId;
+    });
+    
+    // Return the actual submission object, not the wrapper
+    return submissionData?.submission;
+  };
+
+  const canSubmitAssignment = (assignmentId, submission) => {
+    // Can submit if no submission exists or if status is 'resubmit'
+    return !submission || submission.status === 'resubmit';
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    if (!dateString) return 'Date not available';
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+    
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -172,6 +213,7 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
       {assignments.map((assignment) => {
         const submission = getSubmissionStatus(assignment._id);
         const overdue = isOverdue(assignment.dueDate);
+        const canSubmit = canSubmitAssignment(assignment._id, submission);
         
         return (
           <div key={assignment._id} className="assignment-card bg-white border rounded-lg p-6">
@@ -183,18 +225,22 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
                 </div>
                 <div className="text-right">
                   <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    submission 
+                    submission && submission.submittedAt
                       ? submission.status === 'graded' 
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-blue-100 text-blue-800'
+                        : submission.status === 'resubmit'
+                          ? 'bg-orange-100 text-orange-800'
+                          : 'bg-blue-100 text-blue-800'
                       : overdue 
                         ? 'bg-red-100 text-red-800'
                         : 'bg-yellow-100 text-yellow-800'
                   }`}>
-                    {submission 
+                    {submission && submission.submittedAt
                       ? submission.status === 'graded' 
-                        ? `Graded: ${submission.grade}/${assignment.maxPoints}`
-                        : 'Submitted'
+                        ? `Graded: ${submission.grade?.points || submission.grade}/${assignment.maxPoints}`
+                        : submission.status === 'resubmit'
+                          ? 'Resubmission Required'
+                          : 'Submitted'
                       : overdue 
                         ? 'Overdue'
                         : 'Pending'
@@ -237,9 +283,17 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
               </div>
             )}
 
-            {!submission && !overdue && (
+            {canSubmit && (
               <div className="submission-section border-t pt-4">
-                <h5 className="font-medium mb-3">Submit Assignment</h5>
+                <h5 className="font-medium mb-3">
+                  {submission?.status === 'resubmit' ? 'Resubmit Assignment' : 'Submit Assignment'}
+                </h5>
+                {submission?.status === 'resubmit' && submission.grade?.feedback && (
+                  <div className="mb-3 p-3 bg-orange-50 border border-orange-200 rounded">
+                    <p className="text-sm font-medium text-orange-800 mb-1">Feedback for Resubmission:</p>
+                    <p className="text-sm text-orange-700">{submission.grade.feedback}</p>
+                  </div>
+                )}
                 <div className="flex items-center gap-4">
                   <input
                     type="file"
@@ -257,7 +311,7 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    Submit
+                    {submission?.status === 'resubmit' ? 'Resubmit' : 'Submit'}
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
@@ -266,21 +320,27 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
               </div>
             )}
 
-            {submission && (
+            {submission && submission.submittedAt && (
               <div className="submission-info border-t pt-4">
                 <h5 className="font-medium mb-2">Your Submission</h5>
                 <div className="text-sm text-gray-600">
                   <p>Submitted on: {formatDate(submission.submittedAt)}</p>
-                  {submission.status === 'graded' && (
+                  {submission.status === 'graded' && submission.grade && (
                     <>
-                      <p>Grade: {submission.grade}/{assignment.maxPoints}</p>
-                      {submission.feedback && (
+                      <p>Grade: {submission.grade.points || submission.grade}/{assignment.maxPoints}</p>
+                      {submission.grade.feedback && (
                         <div className="mt-2">
                           <p className="font-medium">Feedback:</p>
-                          <p className="bg-gray-50 p-2 rounded">{submission.feedback}</p>
+                          <p className="bg-gray-50 p-2 rounded">{submission.grade.feedback}</p>
                         </div>
                       )}
                     </>
+                  )}
+                  {submission.status === 'resubmit' && (
+                    <div className="mt-2 p-2 bg-orange-50 rounded border border-orange-200">
+                      <p className="text-orange-800 font-medium">Resubmission Required</p>
+                      <p className="text-orange-700 text-xs">Please review the feedback and submit a new version.</p>
+                    </div>
                   )}
                 </div>
               </div>
