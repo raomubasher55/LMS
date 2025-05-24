@@ -1,5 +1,5 @@
 "use client";
-import QuizContainers from "@/components/shared/containers/QuizContainers";
+import StudentAssignmentsContainer from "@/components/shared/containers/StudentAssignmentsContainer";
 import useAssignmentSubmissions from "@/hooks/useAssignmentSubmissions";
 import React, { useEffect, useState } from "react";
 
@@ -8,42 +8,18 @@ const StudentAssingmentsPrimary = () => {
     allAssignments, 
     loading, 
     error, 
-    fetchAllAssignments, 
-    downloadSubmission 
+    fetchAllAssignments
   } = useAssignmentSubmissions();
   const [formattedResults, setFormattedResults] = useState([]);
 
   useEffect(() => {
-    // Format assignments data for QuizContainers component
+    // Format assignments data for the new StudentAssignmentResults component
     if (allAssignments && allAssignments.length > 0) {
-      const formatted = allAssignments.map((assignment, index) => ({
-        id: assignment._id || index,
-        title: assignment.assignment.title,
-        courseName: assignment.course.title,
-        tm: assignment.assignment.totalMarks || assignment.assignment.maxPoints,
-        isSubmit: !!assignment.submission,
-        isDownload: assignment.submission?.hasFiles || false,
-        totalSubmit: assignment.submissionCount || 1,
-        status: assignment.status,
-        submittedAt: assignment.submission?.submittedAt,
-        grade: assignment.submission?.grade,
-        dueDate: assignment.assignment.dueDate,
-        downloadUrl: assignment.downloadUrl,
-        submissionId: assignment.submission?._id,
-        description: assignment.assignment.description
-      }));
-      setFormattedResults(formatted);
+      setFormattedResults(allAssignments);
     } else {
       setFormattedResults([]);
     }
   }, [allAssignments]);
-
-  // Handle download action
-  const handleDownload = (assignment) => {
-    if (assignment.submissionId) {
-      downloadSubmission(assignment.submissionId);
-    }
-  };
 
   // Show loading state
   if (loading) {
@@ -112,10 +88,9 @@ const StudentAssingmentsPrimary = () => {
   }
 
   return (
-    <QuizContainers 
+    <StudentAssignmentsContainer 
       allResults={formattedResults} 
-      title="Assignments" 
-      table={2}
+      title="My Assignments" 
     />
   );
 };

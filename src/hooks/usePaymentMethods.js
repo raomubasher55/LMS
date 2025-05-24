@@ -1,168 +1,122 @@
-"use client";
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const usePaymentMethods = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchPaymentMethods = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      
-      // Get token from local storage
       const token = localStorage.getItem('token');
       if (!token) {
-        throw new Error('Authentication token not found');
+        setLoading(false);
+        return;
       }
 
-      // Make API request with token
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment-methods`,
-        { 
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          } 
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payment-methods`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-      if (response.data && response.data.success) {
-        setPaymentMethods(response.data.data);
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentMethods(data.data);
       } else {
-        throw new Error(response.data?.message || 'Failed to fetch payment methods');
+        console.error('Failed to fetch payment methods');
       }
-    } catch (err) {
-      console.error('Error fetching payment methods:', err);
-      setError(err?.message || String(err) || 'Failed to fetch payment methods');
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const addPaymentMethod = async (paymentData) => {
+  const addPaymentMethod = async (paymentMethodData) => {
     try {
-      setLoading(true);
-      
-      // Get token from local storage
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Authentication token not found');
-      }
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payment-methods`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentMethodData),
+      });
 
-      // Make API request with token
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment-methods`,
-        paymentData,
-        { 
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          } 
-        }
-      );
-
-      if (response.data && response.data.success) {
-        // Refresh the payment methods list
-        await fetchPaymentMethods();
+      if (response.ok) {
+        const data = await response.json();
         toast.success('Payment method added successfully');
+        await fetchPaymentMethods(); // Refresh the list
         return true;
       } else {
-        throw new Error(response.data?.message || 'Failed to add payment method');
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Failed to add payment method');
+        return false;
       }
-    } catch (err) {
-      console.error('Error adding payment method:', err);
-      setError(err?.message || String(err) || 'Failed to add payment method');
-      toast.error(err.response?.data?.message || err?.message || 'Failed to add payment method');
+    } catch (error) {
+      console.error('Error adding payment method:', error);
+      toast.error('Failed to add payment method');
       return false;
-    } finally {
-      setLoading(false);
     }
   };
 
-  const updatePaymentMethod = async (paymentMethodId, updateData) => {
+  const updatePaymentMethod = async (id, updateData) => {
     try {
-      setLoading(true);
-      
-      // Get token from local storage
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Authentication token not found');
-      }
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payment-methods/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
 
-      // Make API request with token
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment-methods/${paymentMethodId}`,
-        updateData,
-        { 
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          } 
-        }
-      );
-
-      if (response.data && response.data.success) {
-        // Refresh the payment methods list
-        await fetchPaymentMethods();
+      if (response.ok) {
         toast.success('Payment method updated successfully');
+        await fetchPaymentMethods(); // Refresh the list
         return true;
       } else {
-        throw new Error(response.data?.message || 'Failed to update payment method');
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Failed to update payment method');
+        return false;
       }
-    } catch (err) {
-      console.error('Error updating payment method:', err);
-      setError(err?.message || String(err) || 'Failed to update payment method');
-      toast.error(err.response?.data?.message || err?.message || 'Failed to update payment method');
+    } catch (error) {
+      console.error('Error updating payment method:', error);
+      toast.error('Failed to update payment method');
       return false;
-    } finally {
-      setLoading(false);
     }
   };
 
-  const deletePaymentMethod = async (paymentMethodId) => {
+  const deletePaymentMethod = async (id) => {
     try {
-      setLoading(true);
-      
-      // Get token from local storage
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Authentication token not found');
-      }
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/payment-methods/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-      // Make API request with token
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment-methods/${paymentMethodId}`,
-        { 
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          } 
-        }
-      );
-
-      if (response.data && response.data.success) {
-        // Refresh the payment methods list
-        await fetchPaymentMethods();
+      if (response.ok) {
         toast.success('Payment method deleted successfully');
+        await fetchPaymentMethods(); // Refresh the list
         return true;
       } else {
-        throw new Error(response.data?.message || 'Failed to delete payment method');
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Failed to delete payment method');
+        return false;
       }
-    } catch (err) {
-      console.error('Error deleting payment method:', err);
-      setError(err?.message || String(err) || 'Failed to delete payment method');
-      toast.error(err.response?.data?.message || err?.message || 'Failed to delete payment method');
+    } catch (error) {
+      console.error('Error deleting payment method:', error);
+      toast.error('Failed to delete payment method');
       return false;
-    } finally {
-      setLoading(false);
     }
   };
 
-  // Fetch payment methods on component mount
   useEffect(() => {
     fetchPaymentMethods();
   }, []);
@@ -170,7 +124,6 @@ const usePaymentMethods = () => {
   return {
     paymentMethods,
     loading,
-    error,
     addPaymentMethod,
     updatePaymentMethod,
     deletePaymentMethod,

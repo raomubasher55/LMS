@@ -1,8 +1,13 @@
+import HeroPrimary from "@/components/sections/hero-banners/HeroPrimary";
 import StudentPaymentMethods from "@/components/sections/sub-section/dashboards/StudentPaymentMethods";
-import React from "react";
 
 const StudentPaymentMethodsMain = () => {
-  return <StudentPaymentMethods />;
+  return (
+    <main>
+      <HeroPrimary title="Payment Methods" />
+      <StudentPaymentMethods />
+    </main>
+  );
 };
 
 export default StudentPaymentMethodsMain;

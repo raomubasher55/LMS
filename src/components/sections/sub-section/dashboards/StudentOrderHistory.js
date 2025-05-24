@@ -13,7 +13,7 @@ const StudentOrderHistory = () => {
   const fetchOrderHistory = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/user-orders`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/student/order-history`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -22,7 +22,11 @@ const StudentOrderHistory = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setOrders(data.orders || []);
+        if (data.success) {
+          setOrders(data.data || []);
+        } else {
+          setError(data.message || 'Failed to load order history');
+        }
       } else {
         setError('Failed to load order history');
       }
@@ -63,10 +67,10 @@ const StudentOrderHistory = () => {
   const downloadReceipt = (order) => {
     // Generate and download receipt
     const receiptData = {
-      orderNumber: order.orderNumber || order._id.slice(-8).toUpperCase(),
-      date: formatDate(order.createdAt),
-      items: order.items,
-      total: order.totalAmount,
+      orderNumber: order.orderId.toString().slice(-8).toUpperCase(),
+      date: formatDate(order.orderDate),
+      course: order.course,
+      total: order.paymentAmount,
       status: order.status,
       paymentMethod: order.paymentMethod,
       transactionId: order.transactionId
@@ -109,13 +113,13 @@ const StudentOrderHistory = () => {
             </tr>
           </thead>
           <tbody>
-            ${receiptData.items.map(item => `
-              <tr>
-                <td>${item.courseName || item.name}</td>
-                <td>${item.instructorName || 'N/A'}</td>
-                <td>$${item.price?.toFixed(2) || '0.00'}</td>
-              </tr>
-            `).join('')}
+            <tr>
+              <td>${receiptData.course.title}</td>
+              <td>${receiptData.course.instructor ? 
+                `${receiptData.course.instructor.firstName} ${receiptData.course.instructor.lastName}` : 
+                'N/A'}</td>
+              <td>$${receiptData.total?.toFixed(2) || '0.00'}</td>
+            </tr>
           </tbody>
         </table>
         <div class="total">
@@ -135,64 +139,37 @@ const StudentOrderHistory = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const retryPayment = async (order) => {
-    try {
-      // Redirect to payment page with order details
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payments/retry-payment`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          orderId: order._id,
-          items: order.items
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.checkoutUrl) {
-          window.location.href = data.checkoutUrl;
-        }
-      } else {
-        alert('Failed to retry payment. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error retrying payment:', error);
-      alert('Error occurred while retrying payment.');
-    }
-  };
-
   const viewOrderDetails = (order) => {
     // Show detailed order information in a modal or alert
     const details = `
 Order Details:
 --------------
-Order Number: ${order.orderNumber || order._id.slice(-8).toUpperCase()}
-Date: ${formatDate(order.createdAt)}
+Order Number: ${order.orderId.toString().slice(-8).toUpperCase()}
+Date: ${formatDate(order.orderDate)}
 Status: ${order.status}
-Total: $${order.totalAmount?.toFixed(2) || '0.00'}
+Total: $${order.paymentAmount?.toFixed(2) || '0.00'}
 
-Items:
-${order.items?.map(item => `- ${item.courseName || item.name}: $${item.price?.toFixed(2) || '0.00'}`).join('\n')}
+Course:
+- ${order.course.title}: $${order.paymentAmount?.toFixed(2) || '0.00'}
 
 Payment Information:
 Payment Method: ${order.paymentMethod || 'N/A'}
 ${order.transactionId ? `Transaction ID: ${order.transactionId}` : ''}
+
+Progress:
+Course Progress: ${order.progress}%
+${order.lastAccessed ? `Last Accessed: ${formatDate(order.lastAccessed)}` : ''}
     `;
     
     alert(details);
   };
 
-  const accessCourses = (order) => {
-    // Navigate to enrolled courses or specific course
-    if (order.items && order.items.length === 1 && order.items[0].courseId) {
-      // Single course - go directly to course
-      window.location.href = `/course/${order.items[0].courseId}`;
+  const accessCourse = (order) => {
+    // Navigate to the specific course
+    if (order.course && order.course._id) {
+      window.location.href = `/course/${order.course._id}/learn`;
     } else {
-      // Multiple courses - go to enrolled courses page
+      // Fallback to enrolled courses page
       window.location.href = '/dashboards/student-enrolled-courses';
     }
   };
@@ -239,73 +216,101 @@ ${order.transactionId ? `Transaction ID: ${order.transactionId}` : ''}
         <div className="space-y-6">
           {orders.map((order) => (
             <div 
-              key={order._id} 
+              key={order.orderId} 
               className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700"
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-blackColor dark:text-blackColor-dark">
-                    Order #{order.orderNumber || order._id.slice(-8).toUpperCase()}
+                    Order #{order.orderId.toString().slice(-8).toUpperCase()}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {formatDate(order.createdAt)}
+                    {formatDate(order.orderDate)}
                   </p>
                 </div>
                 <div className="text-right">
                   {getStatusBadge(order.status)}
                   <p className="text-lg font-bold text-blackColor dark:text-blackColor-dark mt-1">
-                    ${order.totalAmount?.toFixed(2) || '0.00'}
+                    ${order.paymentAmount?.toFixed(2) || '0.00'}
                   </p>
                 </div>
               </div>
 
-              {/* Order Items */}
+              {/* Course Item */}
               <div className="space-y-3">
-                <h4 className="font-medium text-blackColor dark:text-blackColor-dark">Items:</h4>
-                {order.items?.map((item, index) => (
-                  <div key={index} className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0">
-                    <div className="flex items-center">
-                      <div className="w-12 h-12 bg-primaryColor/10 rounded-lg flex items-center justify-center mr-3">
-                        <svg className="w-6 h-6 text-primaryColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-blackColor dark:text-blackColor-dark">
-                          {item.courseName || item.name || 'Course'}
-                        </h5>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {item.instructorName ? `by ${item.instructorName}` : 'Digital Course'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium text-blackColor dark:text-blackColor-dark">
-                        ${item.price?.toFixed(2) || '0.00'}
-                      </p>
-                      {item.quantity && item.quantity > 1 && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Qty: {item.quantity}
-                        </p>
+                <h4 className="font-medium text-blackColor dark:text-blackColor-dark">Course:</h4>
+                <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden mr-4">
+                      {order.course.thumbnail ? (
+                        <img 
+                          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${order.course.thumbnail}`}
+                          alt={order.course.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-primaryColor/10 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-primaryColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                          </svg>
+                        </div>
                       )}
                     </div>
+                    <div>
+                      <h5 className="font-medium text-blackColor dark:text-blackColor-dark">
+                        {order.course.title}
+                      </h5>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {order.course.instructor ? 
+                          `by ${order.course.instructor.firstName} ${order.course.instructor.lastName}` : 
+                          'Digital Course'
+                        }
+                      </p>
+                      <div className="mt-1">
+                        <div className="w-32 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-primaryColor h-2 rounded-full" 
+                            style={{ width: `${order.progress}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{order.progress}% complete</p>
+                      </div>
+                    </div>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <p className="font-medium text-blackColor dark:text-blackColor-dark">
+                      ${order.paymentAmount?.toFixed(2) || '0.00'}
+                    </p>
+                    {order.course.originalPrice && order.course.originalPrice !== order.paymentAmount && (
+                      <p className="text-sm text-gray-500 line-through">
+                        ${order.course.originalPrice?.toFixed(2)}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Payment Details */}
               <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-gray-600 dark:text-gray-400">Payment Method:</span>
-                  <span className="text-blackColor dark:text-blackColor-dark">
+                  <span className="text-blackColor dark:text-blackColor-dark capitalize">
                     {order.paymentMethod || 'Credit Card'}
                   </span>
                 </div>
                 {order.transactionId && (
                   <div className="flex justify-between items-center text-sm mt-1">
                     <span className="text-gray-600 dark:text-gray-400">Transaction ID:</span>
-                    <span className="text-blackColor dark:text-blackColor-dark font-mono">
+                    <span className="text-blackColor dark:text-blackColor-dark font-mono text-xs">
                       {order.transactionId}
+                    </span>
+                  </div>
+                )}
+                {order.lastAccessed && (
+                  <div className="flex justify-between items-center text-sm mt-1">
+                    <span className="text-gray-600 dark:text-gray-400">Last Accessed:</span>
+                    <span className="text-blackColor dark:text-blackColor-dark">
+                      {formatDate(order.lastAccessed)}
                     </span>
                   </div>
                 )}
@@ -313,28 +318,15 @@ ${order.transactionId ? `Transaction ID: ${order.transactionId}` : ''}
 
               {/* Actions */}
               <div className="mt-4 flex space-x-3">
-                {order.status === 'completed' && (
-                  <button 
-                    onClick={() => downloadReceipt(order)}
-                    className="text-primaryColor hover:text-primaryColor/80 text-sm font-medium flex items-center"
-                  >
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Download Receipt
-                  </button>
-                )}
-                {order.status === 'failed' && (
-                  <button 
-                    onClick={() => retryPayment(order)}
-                    className="text-primaryColor hover:text-primaryColor/80 text-sm font-medium flex items-center"
-                  >
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Retry Payment
-                  </button>
-                )}
+                <button 
+                  onClick={() => downloadReceipt(order)}
+                  className="text-primaryColor hover:text-primaryColor/80 text-sm font-medium flex items-center"
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Download Receipt
+                </button>
                 <button 
                   onClick={() => viewOrderDetails(order)}
                   className="text-gray-600 dark:text-gray-400 hover:text-blackColor dark:hover:text-blackColor-dark text-sm font-medium flex items-center"
@@ -345,17 +337,15 @@ ${order.transactionId ? `Transaction ID: ${order.transactionId}` : ''}
                   </svg>
                   View Details
                 </button>
-                {order.items?.some(item => item.courseId) && (
-                  <button 
-                    onClick={() => accessCourses(order)}
-                    className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center"
-                  >
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    Access Courses
-                  </button>
-                )}
+                <button 
+                  onClick={() => accessCourse(order)}
+                  className="text-green-600 hover:text-green-700 text-sm font-medium flex items-center"
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  Access Course
+                </button>
               </div>
             </div>
           ))}

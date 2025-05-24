@@ -19,9 +19,11 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const newSocket = io(socketUrl, {
       autoConnect: false,
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      withCredentials: true
     });
 
     // Connection event handlers
@@ -80,20 +82,40 @@ export const SocketProvider = ({ children }) => {
 
   // Helper functions
   const joinChat = (chatId) => {
+    if (!chatId || chatId === 'undefined') {
+      console.error('Cannot join chat: chatId is invalid', { chatId });
+      return;
+    }
+    
     if (socket && isConnected) {
       socket.emit('join_chat', chatId);
     }
   };
 
   const leaveChat = (chatId) => {
+    if (!chatId || chatId === 'undefined') {
+      console.error('Cannot leave chat: chatId is invalid', { chatId });
+      return;
+    }
+    
     if (socket && isConnected) {
       socket.emit('leave_chat', chatId);
     }
   };
 
-  const sendMessage = (chatId, message, senderId) => {
+  const sendMessage = (chatId, content, senderId, attachments = []) => {
+    if (!chatId || chatId === 'undefined') {
+      console.error('Cannot send socket message: chatId is invalid', { chatId });
+      return;
+    }
+    
     if (socket && isConnected) {
-      socket.emit('send_message', { chatId, message, senderId });
+      socket.emit('send_message', { 
+        chatId, 
+        content, 
+        senderId,
+        attachments
+      });
     }
   };
 

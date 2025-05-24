@@ -1,8 +1,8 @@
-import Annoucements from "@/components/sections/sub-section/dashboards/Annoucements";
+import InstructorAnnouncements from "@/components/sections/sub-section/dashboards/InstructorAnnouncements";
 import React from "react";
 
 const InstructorAnnoucementsMain = () => {
-  return <Annoucements />;
+  return <InstructorAnnouncements />;
 };
 
 export default InstructorAnnoucementsMain;

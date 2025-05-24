@@ -173,10 +173,6 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
     });
   };
 
-  const isOverdue = (dueDate) => {
-    return new Date(dueDate) < new Date();
-  };
-
   if (loading) {
     return (
       <div className="assignments-loading p-6 text-center">
@@ -212,7 +208,6 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
       
       {assignments.map((assignment) => {
         const submission = getSubmissionStatus(assignment._id);
-        const overdue = isOverdue(assignment.dueDate);
         const canSubmit = canSubmitAssignment(assignment._id, submission);
         
         return (
@@ -231,9 +226,7 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
                         : submission.status === 'resubmit'
                           ? 'bg-orange-100 text-orange-800'
                           : 'bg-blue-100 text-blue-800'
-                      : overdue 
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                      : 'bg-yellow-100 text-yellow-800'
                   }`}>
                     {submission && submission.submittedAt
                       ? submission.status === 'graded' 
@@ -241,21 +234,13 @@ const CourseAssignments = ({ courseId, onAssignmentSubmitted }) => {
                         : submission.status === 'resubmit'
                           ? 'Resubmission Required'
                           : 'Submitted'
-                      : overdue 
-                        ? 'Overdue'
-                        : 'Pending'
+                      : 'Pending'
                     }
                   </div>
                 </div>
               </div>
               
-              <div className="assignment-details grid grid-cols-2 gap-4 text-sm text-gray-600">
-                <div>
-                  <span className="font-medium">Due Date:</span>
-                  <span className={`ml-2 ${overdue ? 'text-red-600' : ''}`}>
-                    {formatDate(assignment.dueDate)}
-                  </span>
-                </div>
+              <div className="assignment-details text-sm text-gray-600">
                 <div>
                   <span className="font-medium">Max Points:</span>
                   <span className="ml-2">{assignment.maxPoints}</span>

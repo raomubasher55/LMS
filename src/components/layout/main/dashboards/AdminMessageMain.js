@@ -1,10 +1,10 @@
-import ChatApp from "@/components/shared/dashboards/ChatApp";
+import AdminChatApp from "@/components/shared/dashboards/AdminChatApp";
 import React from "react";
 
 const AdminMessageMain = () => {
   return (
     <>
-      <ChatApp />
+      <AdminChatApp />
     </>
   );
 };

@@ -1,8 +1,8 @@
-import InstructorCourseChat from "@/components/shared/dashboards/InstructorCourseChat";
+import InstructorChatApp from "@/components/shared/dashboards/InstructorChatApp";
 import React from "react";
 
 const InstructorMessageMain = () => {
-  return <InstructorCourseChat />;
+  return <InstructorChatApp />;
 };
 
 export default InstructorMessageMain;

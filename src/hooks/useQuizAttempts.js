@@ -19,7 +19,7 @@ const useQuizAttempts = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/quiz/attempts-all`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/quizes/attempts-all`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -53,7 +53,7 @@ const useQuizAttempts = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/quiz/summary`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/quizes/summary`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -84,7 +84,7 @@ const useQuizAttempts = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/quiz/submit`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/quizes/submit`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -123,7 +123,7 @@ const useQuizAttempts = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/quiz/status/${courseId}/${chapterId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/quizes/status/${courseId}/${chapterId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

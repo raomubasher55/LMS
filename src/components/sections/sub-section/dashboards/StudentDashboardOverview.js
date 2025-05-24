@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import StudentDashboardSummary from "@/components/shared/dashboards/StudentDashboardSummary";
 import useEnrolledCourses from "@/hooks/useEnrolledCourses";
 import CourseProgressCard from "@/components/shared/courses/CourseProgressCard";
+import StudentAnnouncements from "@/components/sections/sub-section/dashboards/StudentAnnouncements";
 import Link from "next/link";
 import { migrateUserEnrollmentData } from "@/utils/migrateUserData";
 import useSweetAlert from "@/hooks/useSweetAlert";
@@ -88,6 +89,11 @@ const StudentDashboardOverview = () => {
             </Link>
           </div>
         )}
+      </div>
+
+      {/* Course Announcements */}
+      <div className="mb-10">
+        <StudentAnnouncements />
       </div>
 
       {/* Recently Completed Courses */}

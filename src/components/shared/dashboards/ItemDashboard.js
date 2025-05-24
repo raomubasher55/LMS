@@ -33,7 +33,7 @@ const ItemDashboard = ({ item }) => {
       </Link>
       {tag ? (
         <span className="text-size-10 font-medium text-whiteColor px-9px bg-primaryColor leading-14px rounded-2xl">
-          12
+          {tag}
         </span>
       ) : (
         ""

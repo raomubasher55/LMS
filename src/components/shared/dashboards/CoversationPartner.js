@@ -140,7 +140,7 @@ const CoversationPartner = ({ chats = [], activeChat, onChatSelect, onRefresh })
           ) : (
             filteredChats.map((chat) => {
               const otherParticipant = getOtherParticipant(chat);
-              const isActive = activeChat?._id === chat._id;
+              const isActive = (activeChat?.chatId || activeChat?._id) === (chat.chatId || chat._id);
               
               return (
                 <li

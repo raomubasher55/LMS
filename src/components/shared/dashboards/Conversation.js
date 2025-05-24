@@ -6,26 +6,34 @@ import { useSocket } from "@/contexts/SocketContext";
 const defaultAvatar = "/assets/images/teacher/teacher__1.png";
 import ConversatonSingle from "./ConversatonSingle";
 
-const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
+const Conversation = ({ activeChat, onSendMessage, onRefreshMessages, onLoadMoreMessages }) => {
   const [messageText, setMessageText] = useState("");
-  const [attachments, setAttachments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
   const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
+  const chatContainerRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const { socket, isConnected, startTyping, stopTyping, isUserOnline } = useSocket();
 
   useEffect(() => {
-    if (activeChat?._id) {
+    if (activeChat?.chatId) {
       onRefreshMessages();
     }
-  }, [activeChat?._id]);
+  }, [activeChat?.chatId]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [activeChat?.messages]);
+    // Always scroll to bottom when messages change
+    const timeoutId = setTimeout(() => {
+      const container = chatContainerRef.current;
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
+  }, [activeChat?.messages?.length]);
 
   // Socket.io typing indicator listeners
   useEffect(() => {
@@ -53,7 +61,10 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
   }, [socket, isConnected, activeChat]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = chatContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   };
 
   const getCurrentUserId = () => {
@@ -74,28 +85,41 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
     const currentUserId = getCurrentUserId();
     const participant = activeChat.participants?.find(p => p._id !== currentUserId);
     
-    // Debug logging to see what data we have
-    if (participant) {
-      console.log('Other participant data:', participant);
-    }
-    
     return participant;
+  };
+
+  const getAvatarUrl = (user) => {
+    if (user?.profileImage) {
+      return user.profileImage.startsWith('http') 
+        ? user.profileImage 
+        : `${process.env.NEXT_PUBLIC_BACKEND_URL}${user.profileImage}`;
+    }
+    if (user?.profile) {
+      return user.profile.startsWith('http') 
+        ? user.profile 
+        : `${process.env.NEXT_PUBLIC_BACKEND_URL}${user.profile}`;
+    }
+    return defaultAvatar;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!messageText.trim() && attachments.length === 0) return;
+    if (!messageText.trim()) return;
     if (!activeChat || loading) return;
 
     setLoading(true);
     try {
-      await onSendMessage(messageText, attachments);
+      await onSendMessage(messageText);
       setMessageText("");
-      setAttachments([]);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      
+      // Force scroll after sending message
+      setTimeout(() => {
+        const container = chatContainerRef.current;
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
+      }, 100);
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -103,14 +127,6 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
     }
   };
 
-  const handleFileSelect = (e) => {
-    const files = Array.from(e.target.files);
-    setAttachments(prev => [...prev, ...files]);
-  };
-
-  const removeAttachment = (index) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
-  };
 
   const handleTyping = (e) => {
     setMessageText(e.target.value);
@@ -123,7 +139,7 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
     // Start typing indicator
     if (!isTyping) {
       setIsTyping(true);
-      startTyping(activeChat._id, currentUserId);
+      startTyping(activeChat.chatId, currentUserId);
     }
 
     // Clear previous timeout
@@ -134,7 +150,7 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
     // Stop typing indicator after 1 second of no typing
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
-      stopTyping(activeChat._id, currentUserId);
+      stopTyping(activeChat.chatId, currentUserId);
     }, 1000);
   };
 
@@ -155,10 +171,10 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
       id: message._id,
       image: isCurrentUser 
         ? null // Current user doesn't need image in their own messages
-        : (otherParticipant?.profileImage || otherParticipant?.profile || defaultAvatar),
+        : getAvatarUrl(otherParticipant),
       isCurrentUser: isCurrentUser,
       messages: [{
-        message: message.content || message.message,
+        message: message.content,
         time: formatTime(message.timestamp || message.createdAt),
         attachments: message.attachments || []
       }]
@@ -230,7 +246,34 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
         </div>
 
         {/* conversation body */}
-        <div className="max-h-125 overflow-y-auto mt-10 flex flex-col">
+        <div ref={chatContainerRef} className="max-h-125 overflow-y-auto mt-10 flex flex-col">
+          {/* Load More Messages Button */}
+          {activeChat?.pagination?.hasMore && onLoadMoreMessages && (
+            <div className="text-center py-4">
+              <button
+                onClick={async () => {
+                  setLoadingMore(true);
+                  try {
+                    await onLoadMoreMessages();
+                  } finally {
+                    setLoadingMore(false);
+                  }
+                }}
+                disabled={loadingMore}
+                className="px-4 py-2 bg-primaryColor text-white rounded-md hover:bg-primaryColor/90 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                {loadingMore ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Loading...
+                  </span>
+                ) : (
+                  `Load More Messages (${activeChat.pagination.totalMessages - activeChat.messages?.length || 0} remaining)`
+                )}
+              </button>
+            </div>
+          )}
+          
           {transformedMessages.length === 0 ? (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <p>No messages yet. Start the conversation!</p>
@@ -256,55 +299,10 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Show selected attachments */}
-        {attachments.length > 0 && (
-          <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              Selected files ({attachments.length}):
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {attachments.map((file, index) => (
-                <div 
-                  key={index}
-                  className="flex items-center bg-white dark:bg-gray-700 rounded px-2 py-1 text-sm"
-                >
-                  <span className="truncate max-w-32">{file.name}</span>
-                  <button
-                    onClick={() => removeAttachment(index)}
-                    className="ml-2 text-red-500 hover:text-red-700"
-                  >
-                    <i className="icofont-close text-xs"></i>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* conversation input */}
         <div className="mt-4">
           <form onSubmit={handleSubmit} className="flex items-center bg-darkdeep3 dark:bg-darkdeep3-dark pl-30px rounded-full md:mr-30px">
-            <div className="h-[150%] block">
-              <label
-                htmlFor="attachment"
-                className="text-darkdeep4 text-xl pr-5 border-r border-darkdeep4 border-opacity-20 dark:border-blue-light2 h-full block py-9px cursor-pointer"
-                title="Attach file"
-              >
-                <i
-                  className="icofont-attachment attachment"
-                  aria-hidden="true"
-                ></i>
-              </label>
-              <input
-                ref={fileInputRef}
-                id="attachment"
-                type="file"
-                multiple
-                onChange={handleFileSelect}
-                className="hidden"
-                accept="image/*,application/pdf,.doc,.docx,.txt"
-              />
-            </div>
             <div className="flex-grow">
               <input
                 type="text"
@@ -318,7 +316,7 @@ const Conversation = ({ activeChat, onSendMessage, onRefreshMessages }) => {
             <div className="flex-shrink-0">
               <button 
                 type="submit"
-                disabled={loading || (!messageText.trim() && attachments.length === 0)}
+                disabled={loading || !messageText.trim()}
                 className="w-50px h-50px leading-50px bg-primaryColor text-whiteColor rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (

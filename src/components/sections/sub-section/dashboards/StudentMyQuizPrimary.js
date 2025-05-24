@@ -1,5 +1,5 @@
 "use client";
-import QuizContainers from "@/components/shared/containers/QuizContainers";
+import StudentQuizAttemptsContainer from "@/components/shared/containers/StudentQuizAttemptsContainer";
 import useQuizAttempts from "@/hooks/useQuizAttempts";
 import React, { useEffect, useState } from "react";
 
@@ -12,24 +12,24 @@ const StudentMyQuizPrimary = () => {
     if (quizAttempts && quizAttempts.length > 0) {
       const formatted = quizAttempts.map((attempt, index) => ({
         id: attempt._id || index,
-        date: new Date(attempt.attempt.attemptedAt).toLocaleDateString('en-US', {
+        date: new Date(attempt.attemptedAt).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric'
         }),
-        title: attempt.quiz.title,
+        title: `${attempt.courseName} - ${attempt.chapterTitle}`,
         studentName: "You", // Since this is the student's own attempts
-        qus: attempt.attempt.totalQuestions,
-        tm: attempt.attempt.timeSpent || "15 mins",
-        ca: attempt.attempt.correctAnswers,
-        score: attempt.attempt.score,
+        qus: attempt.answers ? attempt.answers.length : 0,
+        tm: "15 mins", // Default time as it's not stored in attempts
+        ca: Math.round((attempt.score / 100) * (attempt.answers ? attempt.answers.length : 0)),
+        score: attempt.score,
         isView: true,
-        status: attempt.attempt.status, // 'passed' or 'failed'
-        courseTitle: attempt.course.title,
-        chapterTitle: attempt.chapter.title,
-        instructor: attempt.course.instructor ? 
-          `${attempt.course.instructor.firstName} ${attempt.course.instructor.lastName}` : 
-          "Unknown Instructor"
+        status: attempt.passed ? 'passed' : 'failed',
+        courseTitle: attempt.courseName,
+        chapterTitle: attempt.chapterTitle,
+        instructor: "Unknown Instructor", // Not included in current data structure
+        totalAttempts: attempt.totalAttempts,
+        bestScore: attempt.bestScore
       }));
       setFormattedResults(formatted);
     } else {
@@ -103,7 +103,7 @@ const StudentMyQuizPrimary = () => {
     );
   }
 
-  return <QuizContainers allResults={formattedResults} title={"My Quiz Attempts"} />;
+  return <StudentQuizAttemptsContainer allResults={formattedResults} title={"My Quiz Attempts"} />;
 };
 
 export default StudentMyQuizPrimary;

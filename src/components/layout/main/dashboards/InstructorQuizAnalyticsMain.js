@@ -172,7 +172,7 @@ const InstructorQuizAnalyticsMain = () => {
           {/* Restriction Statistics */}
           <div>
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Student Restrictions</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <RestrictionStatCard
                 title="Time Restricted"
                 count={analytics.restrictionStats.studentsInTimeRestriction}
@@ -184,12 +184,6 @@ const InstructorQuizAnalyticsMain = () => {
                 count={analytics.restrictionStats.studentsRequiringVideoRewatch}
                 color="blue"
                 icon="video-cam"
-              />
-              <RestrictionStatCard
-                title="Need Approval"
-                count={analytics.restrictionStats.studentsRequiringApproval}
-                color="red"
-                icon="warning"
               />
               <RestrictionStatCard
                 title="Total Restricted"

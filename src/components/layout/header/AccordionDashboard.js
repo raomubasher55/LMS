@@ -35,11 +35,6 @@ const AccordionDashboard = () => {
           path: "/dashboards/admin-reviews",
         },
         {
-          name: "Admin Quiz",
-
-          path: "/dashboards/admin-quiz-attempts",
-        },
-        {
           name: "Setting",
 
           path: "/dashboards/admin-settings",

@@ -30,8 +30,8 @@ const StudentPaymentMethods = () => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
-    if (name.includes('.')) {
-      const [group, field] = name.split('.');
+    if (name.includes(".")) {
+      const [group, field] = name.split(".");
       setFormData({
         ...formData,
         [group]: {
@@ -42,14 +42,13 @@ const StudentPaymentMethods = () => {
     } else {
       setFormData({
         ...formData,
-        [name]: type === 'checkbox' ? checked : value
+        [name]: type === "checkbox" ? checked : value
       });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     const success = await addPaymentMethod(formData);
     if (success) {
       setShowAddForm(false);
@@ -86,30 +85,30 @@ const StudentPaymentMethods = () => {
 
   // Helper to render payment method icon
   const renderPaymentIcon = (type, details) => {
-    if (type === 'credit_card') {
-      const brand = details?.brand?.toLowerCase() || '';
-      if (brand.includes('visa')) return '💳 Visa';
-      if (brand.includes('mastercard')) return '💳 Mastercard';
-      if (brand.includes('amex') || brand.includes('american')) return '💳 Amex';
-      return '💳 Card';
+    if (type === "credit_card") {
+      const brand = details?.brand?.toLowerCase() || "";
+      if (brand.includes("visa")) return "💳 Visa";
+      if (brand.includes("mastercard")) return "💳 Mastercard";
+      if (brand.includes("amex") || brand.includes("american")) return "💳 Amex";
+      return "💳 Card";
     }
-    if (type === 'paypal') return 'PayPal';
-    if (type === 'bank_account') return '🏦 Bank';
-    return '💰';
+    if (type === "paypal") return "PayPal";
+    if (type === "bank_account") return "🏦 Bank";
+    return "💰";
   };
 
   // Helper to get payment method details
   const getPaymentDetails = (method) => {
-    if (method.type === 'credit_card') {
+    if (method.type === "credit_card") {
       return `•••• ${method.cardDetails.lastFour} | Exp: ${method.cardDetails.expiryMonth}/${method.cardDetails.expiryYear}`;
     }
-    if (method.type === 'paypal') {
+    if (method.type === "paypal") {
       return method.paypalDetails.email;
     }
-    if (method.type === 'bank_account') {
-      return `${method.bankDetails.bankName || 'Bank'} •••• ${method.bankDetails.lastFour}`;
+    if (method.type === "bank_account") {
+      return `${method.bankDetails.bankName || "Bank"} •••• ${method.bankDetails.lastFour}`;
     }
-    return '';
+    return "";
   };
 
   return (
@@ -120,7 +119,6 @@ const StudentPaymentMethods = () => {
         </h2>
       </div>
 
-      {/* List of payment methods */}
       {loading ? (
         <div className="flex justify-center items-center py-10">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primaryColor"></div>
@@ -129,36 +127,39 @@ const StudentPaymentMethods = () => {
         <div className="mb-8">
           {paymentMethods.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 dark:bg-gray-800 rounded-md">
-              <p className="text-gray-600 dark:text-gray-400 mb-4">You don't have any payment methods yet.</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                You don't have any payment methods yet.
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
               {paymentMethods.map((method) => (
-                <div 
-                  key={method._id} 
+                <div
+                  key={method._id}
                   className={`flex justify-between items-center p-4 rounded-md ${
-                    method.isDefault 
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' 
-                      : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
+                    method.isDefault
+                      ? "bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
+                      : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
                   }`}
                 >
                   <div className="flex items-center">
                     <div className="mr-4">
-                      {renderPaymentIcon(method.type, 
-                        method.type === 'credit_card' 
-                          ? method.cardDetails 
-                          : method.type === 'paypal' 
-                            ? method.paypalDetails 
-                            : method.bankDetails
+                      {renderPaymentIcon(
+                        method.type,
+                        method.type === "credit_card"
+                          ? method.cardDetails
+                          : method.type === "paypal"
+                          ? method.paypalDetails
+                          : method.bankDetails
                       )}
                     </div>
                     <div>
                       <div className="font-medium">
-                        {method.type === 'credit_card' 
-                          ? method.cardDetails.nameOnCard 
-                          : method.type === 'bank_account' 
-                            ? method.bankDetails.accountName 
-                            : 'PayPal Account'}
+                        {method.type === "credit_card"
+                          ? method.cardDetails.nameOnCard
+                          : method.type === "bank_account"
+                          ? method.bankDetails.accountName
+                          : "PayPal Account"}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
                         {getPaymentDetails(method)}
@@ -181,7 +182,7 @@ const StudentPaymentMethods = () => {
                     )}
                     <button
                       onClick={() => handleDelete(method._id)}
-                      className="text-sm bg-red-100 hover:bg-red-200 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-800 dark:text-red-300 py-1 px-3 rounded"
+                      className="text-sm bg-red-100 hover:bg-red-200 dark:bg-red-800 dark:hover:bg-red-700 text-red-800 dark:text-red-200 py-1 px-3 rounded"
                     >
                       Delete
                     </button>
@@ -193,47 +194,41 @@ const StudentPaymentMethods = () => {
         </div>
       )}
 
-      {/* Add new payment method button */}
+      {/* Add Payment Method Button */}
       {!showAddForm && (
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="bg-primaryColor hover:bg-primaryColor/90 text-white px-4 py-2 rounded"
-        >
-          Add Payment Method
-        </button>
+        <div className="mb-6">
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="w-full bg-primaryColor text-white py-3 px-4 rounded-md hover:bg-primaryColor/90 font-medium"
+          >
+            <svg
+              className="w-5 h-5 inline-block mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            Add New Payment Method
+          </button>
+        </div>
       )}
 
-      {/* Add new payment method form */}
+      {/* Add Payment Method Form */}
       {showAddForm && (
-        <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-md">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold">Add Payment Method</h3>
-            <button
-              onClick={() => setShowAddForm(false)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            {/* Payment method type selection */}
-            <div className="mb-4">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+          <h3 className="text-lg font-semibold mb-4 text-blackColor dark:text-blackColor-dark">
+            Add Payment Method
+          </h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Payment Method Type
+                Payment Type
               </label>
               <select
                 name="type"

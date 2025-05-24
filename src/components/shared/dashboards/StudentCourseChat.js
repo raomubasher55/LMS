@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSocket } from "@/contexts/SocketContext";
+import { useUnreadMessagesContext } from "@/contexts/UnreadMessagesContext";
 import Conversation from "./Conversation";
 import CoversationPartner from "./CoversationPartner";
 
@@ -12,6 +13,7 @@ const StudentCourseChat = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { socket, isConnected, joinChat, leaveChat, sendMessage } = useSocket();
+  const { refetchUnreadCount } = useUnreadMessagesContext();
 
   useEffect(() => {
     fetchUserChats();
@@ -23,22 +25,64 @@ const StudentCourseChat = () => {
     if (!socket || !isConnected) return;
 
     const handleNewMessage = (data) => {
-      const { chatId, message, senderId, timestamp } = data;
+      const { chatId, content, senderId, timestamp, attachments = [] } = data;
       
-      if (activeChat && activeChat._id === chatId) {
-        setActiveChat(prev => ({
-          ...prev,
-          messages: [
+      const getCurrentUserId = () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (token) {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.id || payload.userId;
+          }
+        } catch (error) {
+          console.error('Error getting user ID:', error);
+        }
+        return null;
+      };
+
+      const currentUserId = getCurrentUserId();
+      
+      // Only process messages from other users to avoid duplicates
+      if (senderId === currentUserId) {
+        return;
+      }
+      
+      if (activeChat && activeChat.chatId === chatId) {
+        setActiveChat(prev => {
+          // Check if message already exists to prevent duplicates
+          const messageExists = prev.messages?.some(msg => 
+            msg.sender?._id === senderId && 
+            msg.content === content && 
+            Math.abs(new Date(msg.timestamp) - new Date(timestamp)) < 1000
+          );
+          
+          if (messageExists) {
+            return prev;
+          }
+          
+          const newMessages = [
             ...(prev.messages || []),
             {
-              _id: Date.now().toString(),
-              content: message.content || message.message,
+              _id: `socket-${Date.now()}-${senderId}`,
+              content,
               sender: { _id: senderId },
-              timestamp: timestamp,
-              attachments: message.attachments || []
+              timestamp,
+              attachments
             }
-          ]
-        }));
+          ];
+          
+          // Sort messages chronologically (oldest first)
+          newMessages.sort((a, b) => {
+            const timeA = new Date(a.timestamp || a.createdAt);
+            const timeB = new Date(b.timestamp || b.createdAt);
+            return timeA - timeB;
+          });
+          
+          return {
+            ...prev,
+            messages: newMessages
+          };
+        });
       }
       
       setChats(prev => prev.map(chat => {
@@ -46,11 +90,11 @@ const StudentCourseChat = () => {
           return {
             ...chat,
             lastMessage: {
-              content: message.content || message.message,
-              sender: senderId,
-              timestamp: timestamp
+              content,
+              sender: { _id: senderId },
+              timestamp
             },
-            unreadCount: chat._id === activeChat?._id ? 0 : (chat.unreadCount || 0) + 1
+            unreadCount: chat.chatId === activeChat?.chatId ? 0 : (chat.unreadCount || 0) + 1
           };
         }
         return chat;
@@ -66,9 +110,9 @@ const StudentCourseChat = () => {
 
   useEffect(() => {
     if (!activeChat || !isConnected) return;
-    joinChat(activeChat._id);
+    joinChat(activeChat.chatId);
     return () => {
-      if (activeChat) leaveChat(activeChat._id);
+      if (activeChat) leaveChat(activeChat.chatId);
     };
   }, [activeChat, isConnected, joinChat, leaveChat]);
 
@@ -90,7 +134,7 @@ const StudentCourseChat = () => {
           const firstChat = data.data[0];
           setActiveChat(firstChat);
           // Fetch messages for the first chat
-          fetchChatMessages(firstChat._id);
+          fetchChatMessages(firstChat.chatId || firstChat._id);
         }
       } else {
         setError('Failed to load chats');
@@ -128,8 +172,22 @@ const StudentCourseChat = () => {
   };
 
   const handleStartChat = async (instructorId, courseId) => {
+    setLoading(true);
+    setError(null);
+    
     try {
       const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setError('Please log in to start a chat');
+        return;
+      }
+      
+      if (!instructorId || !courseId) {
+        setError('Missing instructor or course information');
+        return;
+      }
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chats/course-chat`, {
         method: 'POST',
         headers: {
@@ -142,8 +200,9 @@ const StudentCourseChat = () => {
         })
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         console.log('Course chat response:', data);
         
         // Add to chats if it's a new chat
@@ -158,23 +217,59 @@ const StudentCourseChat = () => {
         setActiveChat(data.data);
         setShowContacts(false);
       } else {
-        setError('Failed to start chat');
+        // Handle specific error cases
+        const errorMessage = data.message || 'Failed to start chat with instructor';
+        
+        if (response.status === 403) {
+          if (data.message.includes('not enrolled')) {
+            setError('You need to enroll in this course first to message the instructor.');
+          } else if (data.message.includes('unpublished')) {
+            setError('This course is not yet available for chat.');
+          } else {
+            setError(errorMessage);
+          }
+        } else if (response.status === 404) {
+          setError('Instructor or course not found.');
+        } else if (response.status === 400) {
+          setError('Invalid request. Please try again.');
+        } else {
+          setError(errorMessage);
+        }
+        
+        console.error('Chat creation failed:', data);
       }
     } catch (error) {
       console.error('Error starting chat:', error);
-      setError('Error starting chat');
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleChatSelect = (chat) => {
     console.log('Selected chat:', chat);
+    if (!chat || !(chat.chatId || chat._id)) {
+      console.error('Cannot select chat: chat or chat.chatId is missing', { chat });
+      setError('Invalid chat selected');
+      return;
+    }
     setActiveChat(chat);
     // Immediately fetch messages for this chat
-    fetchChatMessages(chat._id);
+    fetchChatMessages(chat.chatId || chat._id);
+    
+    // Reset unread count for this specific chat
+    setChats(prev => prev.map(c => 
+      (c.chatId || c._id) === (chat.chatId || chat._id) 
+        ? { ...c, unreadCount: 0 }
+        : c
+    ));
   };
 
   const handleSendMessage = async (messageText, attachments = []) => {
-    if (!activeChat || !messageText.trim()) return;
+    if (!activeChat || !activeChat.chatId || !messageText.trim()) {
+      console.error('Cannot send message: activeChat or activeChat.chatId is missing', { activeChat });
+      return;
+    }
 
     const getCurrentUserId = () => {
       try {
@@ -194,7 +289,7 @@ const StudentCourseChat = () => {
       
       // For now, send as JSON without file attachments
       // TODO: Implement file upload handling later
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chats/${activeChat._id}/messages`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chats/${activeChat.chatId}/messages`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -210,15 +305,14 @@ const StudentCourseChat = () => {
         const data = await response.json();
         
         if (isConnected && socket) {
-          sendMessage(activeChat._id, {
+          sendMessage(activeChat.chatId, {
             content: messageText,
             attachments: []
           }, getCurrentUserId());
         }
         
-        setActiveChat(prev => ({
-          ...prev,
-          messages: [
+        setActiveChat(prev => {
+          const newMessages = [
             ...(prev.messages || []),
             {
               _id: data.data?._id || Date.now().toString(),
@@ -227,11 +321,23 @@ const StudentCourseChat = () => {
               timestamp: new Date(),
               attachments: data.data?.attachments || []
             }
-          ]
-        }));
+          ];
+          
+          // Sort messages chronologically (oldest first)
+          newMessages.sort((a, b) => {
+            const timeA = new Date(a.timestamp || a.createdAt);
+            const timeB = new Date(b.timestamp || b.createdAt);
+            return timeA - timeB;
+          });
+          
+          return {
+            ...prev,
+            messages: newMessages
+          };
+        });
         
         setChats(prev => prev.map(chat => {
-          if (chat._id === activeChat._id) {
+          if (chat.chatId === activeChat.chatId) {
             return {
               ...chat,
               lastMessage: {
@@ -243,6 +349,9 @@ const StudentCourseChat = () => {
           }
           return chat;
         }));
+        
+        // Refresh unread count for recipient
+        refetchUnreadCount();
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -250,6 +359,11 @@ const StudentCourseChat = () => {
   };
 
   const fetchChatMessages = async (chatId) => {
+    if (!chatId || chatId === 'undefined') {
+      console.error('Cannot fetch chat messages: chatId is invalid', { chatId });
+      return;
+    }
+    
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chats/${chatId}`, {
@@ -262,9 +376,17 @@ const StudentCourseChat = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Fetched messages for chat:', chatId, data);
+        const messages = data.data?.messages || data.messages || [];
+        // Sort messages chronologically (oldest first)
+        messages.sort((a, b) => {
+          const timeA = new Date(a.timestamp || a.createdAt);
+          const timeB = new Date(b.timestamp || b.createdAt);
+          return timeA - timeB;
+        });
+        
         setActiveChat(prev => ({
           ...prev,
-          messages: data.data?.messages || data.messages || []
+          messages: messages
         }));
       } else {
         console.error('Failed to fetch messages:', response.status);
@@ -397,7 +519,7 @@ const StudentCourseChat = () => {
         <Conversation 
           activeChat={activeChat}
           onSendMessage={handleSendMessage}
-          onRefreshMessages={() => activeChat && fetchChatMessages(activeChat._id)}
+          onRefreshMessages={() => activeChat && fetchChatMessages(activeChat.chatId)}
         />
       </div>
     </div>

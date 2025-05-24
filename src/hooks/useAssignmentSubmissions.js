@@ -136,7 +136,7 @@ const useAssignmentSubmissions = (courseId = null) => {
       }
 
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/submissions/student/all`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/courses/student/assignments`,
         { 
           headers: { 
             'Authorization': `Bearer ${token}`,

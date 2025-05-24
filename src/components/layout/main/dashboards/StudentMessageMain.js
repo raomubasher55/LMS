@@ -1,8 +1,8 @@
-import StudentCourseChat from "@/components/shared/dashboards/StudentCourseChat";
+import StudentChatApp from "@/components/shared/dashboards/StudentChatApp";
 import React from "react";
 
 const StudentMessageMain = () => {
-  return <StudentCourseChat />;
+  return <StudentChatApp />;
 };
 
 export default StudentMessageMain;

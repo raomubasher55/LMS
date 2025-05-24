@@ -42,12 +42,6 @@ const DropdownDashboard = () => {
           type: "secondary",
         },
         {
-          name: "Admin Quiz",
-          status: null,
-          path: "/dashboards/admin-quiz-attempts",
-          type: "secondary",
-        },
-        {
           name: "Setting",
           status: null,
           path: "/dashboards/admin-settings",
