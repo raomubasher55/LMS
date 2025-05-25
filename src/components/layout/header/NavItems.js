@@ -34,13 +34,20 @@ const NavItems = () => {
     },
     {
       id: 3,
+      name: "Blog",
+      path: "/blogs",
+      dropdown: null,
+      isRelative: false,
+    },
+    {
+      id: 4,
       name: "Pages",
       path: "/about",
       dropdown: <DropdownPages />,
       isRelative: false,
     },
     {
-      id: 4,
+      id: 5,
       name: "Courses",
       path: "/courses",
       dropdown: <DropdownCourses />,
@@ -49,7 +56,7 @@ const NavItems = () => {
     ...(userExists
       ? [
           {
-            id: 5,
+            id: 6,
             name: "Dashboard",
             path: "/dashboards/instructor-dashboard",
             dropdown: <DropdownDashboard />,
@@ -58,7 +65,7 @@ const NavItems = () => {
         ]
       : []),
     {
-      id: 6,
+      id: 7,
       name: "eCommerce",
       path: "/ecommerce/shop",
       dropdown: <DropdownEcommerce />,
