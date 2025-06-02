@@ -1,0 +1,369 @@
+"use client";
+import { useState } from "react";
+
+const CreateBlogModal = ({ onClose, onSuccess }) => {
+  const [formData, setFormData] = useState({
+    title: "",
+    content: "",
+    excerpt: "",
+    category: "General",
+    tags: "",
+    status: "draft",
+    metaTitle: "",
+    metaDescription: "",
+    isCommentEnabled: true,
+  });
+  const [featuredImage, setFeaturedImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        setErrors((prev) => ({
+          ...prev,
+          featuredImage: "Image size should be less than 5MB",
+        }));
+        return;
+      }
+      setFeaturedImage(file);
+      setErrors((prev) => ({ ...prev, featuredImage: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.title.trim()) {
+      newErrors.title = "Title is required";
+    }
+
+    if (!formData.content.trim()) {
+      newErrors.content = "Content is required";
+    }
+
+    if (formData.metaTitle && formData.metaTitle.length > 60) {
+      newErrors.metaTitle = "Meta title should be less than 60 characters";
+    }
+
+    if (formData.metaDescription && formData.metaDescription.length > 160) {
+      newErrors.metaDescription =
+        "Meta description should be less than 160 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem("token");
+      const formDataToSend = new FormData();
+
+      // Append all form fields
+      Object.keys(formData).forEach((key) => {
+        formDataToSend.append(key, formData[key]);
+      });
+
+      // Append image if selected
+      if (featuredImage) {
+        formDataToSend.append("featuredImage", featuredImage);
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/blogs`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataToSend,
+        }
+      );
+
+      if (response.ok) {
+        onSuccess();
+      } else {
+        const errorData = await response.json();
+        setErrors({ submit: errorData.message || "Failed to create blog" });
+      }
+    } catch (error) {
+      console.error("Error creating blog:", error);
+      setErrors({ submit: "Network error. Please try again." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-[#000000b9] bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-naveBlue rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Create New Blog Post
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Title *
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-transparent dark:text-white"
+                  placeholder="Enter blog title"
+                />
+                {errors.title && (
+                  <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Excerpt
+                </label>
+                <textarea
+                  name="excerpt"
+                  value={formData.excerpt}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-transparent dark:text-white"
+                  placeholder="Brief description of the blog"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-naveBlue text-gray-700 dark:text-white"
+                  >
+                    <option value="">All Categories</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Education">Education</option>
+                    <option value="Business">Business</option>
+                    <option value="General">General</option>
+                    <option value="Course Creation">Course Creation</option>
+                    <option value="Teaching Tips">Teaching Tips</option>
+                    <option value="Learning Strategies">
+                      Learning Strategies
+                    </option>
+                    <option value="Platform Updates">Platform Updates</option>
+                    <option value="Student Success Stories">
+                      Student Success Stories
+                    </option>
+                    <option value="Instructor Guides">Instructor Guides</option>
+                    <option value="Marketing Your Course">
+                      Marketing Your Course
+                    </option>
+                    <option value="Earning on Tanga Academy">
+                      Earning on Tanga Academy
+                    </option>
+                    <option value="Community and Support">
+                      Community and Support
+                    </option>
+                    <option value="Announcements">Announcements</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Status
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-naveBlue text-gray-700 dark:text-white"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Tags (comma separated)
+                </label>
+                <input
+                  type="text"
+                  name="tags"
+                  value={formData.tags}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-transparent dark:text-white"
+                  placeholder="e.g., javascript, react, tutorial"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Featured Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-transparent dark:text-white"
+                />
+                {errors.featuredImage && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.featuredImage}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Content *
+                </label>
+                <textarea
+                  name="content"
+                  value={formData.content}
+                  onChange={handleInputChange}
+                  rows={10}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-transparent dark:text-white"
+                  placeholder="Write your blog content here..."
+                />
+                {errors.content && (
+                  <p className="text-red-500 text-sm mt-1">{errors.content}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Meta Title (SEO)
+                </label>
+                <input
+                  type="text"
+                  name="metaTitle"
+                  value={formData.metaTitle}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-transparent dark:text-white"
+                  placeholder="SEO title (max 60 characters)"
+                  maxLength={60}
+                />
+                {errors.metaTitle && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.metaTitle}
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 mt-1">
+                  {formData.metaTitle.length}/60
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Meta Description (SEO)
+                </label>
+                <textarea
+                  name="metaDescription"
+                  value={formData.metaDescription}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-transparent dark:text-white"
+                  placeholder="SEO description (max 160 characters)"
+                  maxLength={160}
+                />
+                {errors.metaDescription && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.metaDescription}
+                  </p>
+                )}
+                <p className="text-sm text-gray-500 mt-1">
+                  {formData.metaDescription.length}/160
+                </p>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="isCommentEnabled"
+                  checked={formData.isCommentEnabled}
+                  onChange={handleInputChange}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                  Enable comments
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {errors.submit && (
+            <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {errors.submit}
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2  text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 dark:bg-blueDark bg-transparent hover:bg-gray-50 dark:hover:bg-naveBlue rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Creating..." : "Create Blog"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default CreateBlogModal;
