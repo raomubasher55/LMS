@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image";
 import React from "react";
 import post1 from "@/assets/images/footer/footer__1.png";

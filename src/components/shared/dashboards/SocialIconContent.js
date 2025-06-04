@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import ButtonPrimary from "../buttons/ButtonPrimary";
 import axios from "axios"; 

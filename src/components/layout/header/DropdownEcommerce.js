@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import DropdownPrimary from "./DropdownPrimary";
 const DropdownEcommerce = () => {

@@ -1,3 +1,5 @@
+"use client"
+
 import useIsSecondary from "@/hooks/useIsSecondary";
 import Image from "next/image";
 import React from "react";

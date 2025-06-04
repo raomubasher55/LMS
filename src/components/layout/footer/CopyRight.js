@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import React from "react";
 import logoImage from "@/assets/images/logo/tanga.jpeg";

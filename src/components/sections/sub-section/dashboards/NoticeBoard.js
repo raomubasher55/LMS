@@ -75,7 +75,7 @@ const NoticeBoard = () => {
     // Set up WebSocket connection
     const token = getAuthToken();
     if (token) {
-      const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:5000'}?token=${token}`;
+      const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL || 'ws://lms-server.cosha.eu'}?token=${token}`;
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {

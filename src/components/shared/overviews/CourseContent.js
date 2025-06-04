@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect } from 'react';
 import CourseCard2 from "../courses/CourseCard2";
 

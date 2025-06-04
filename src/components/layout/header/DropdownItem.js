@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import DropdownLink from "./DropdownLink";
 import DropdownWrapperPrimary from "@/components/shared/wrappers/DropdownWrapperPrimary";

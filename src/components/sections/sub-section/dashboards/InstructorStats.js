@@ -30,7 +30,7 @@ const InstructorStats = () => {
 
       console.log("Fetching instructor courses...");
       // Fetch instructor courses
-      const coursesResponse = await fetch(`http://localhost:5000/api/instructor-courses`, {
+      const coursesResponse = await fetch(`https://lms-server.cosha.eu/api/instructor-courses`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ const InstructorStats = () => {
       }
 
       // Fetch pending assignment submissions
-      const assignmentsResponse = await fetch(`http://localhost:5000/api/courses/instructor/assignments`, {
+      const assignmentsResponse = await fetch(`https://lms-server.cosha.eu/api/courses/instructor/assignments`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ const InstructorStats = () => {
       }
 
       // Fetch instructor reviews
-      const reviewsResponse = await fetch(`http://localhost:5000/api/instructor/reviews`, {
+      const reviewsResponse = await fetch(`https://lms-server.cosha.eu/api/instructor/reviews`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

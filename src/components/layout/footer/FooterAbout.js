@@ -1,3 +1,4 @@
+"use client"
 import useIsSecondary from "@/hooks/useIsSecondary";
 
 const FooterAbout = () => {

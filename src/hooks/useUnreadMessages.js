@@ -13,7 +13,7 @@ const useUnreadMessages = () => {
         return;
       }
 
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://lms-server.cosha.eu';
 
       const response = await fetch(`${baseUrl}/api/users/unread-messages`, {
         method: 'GET',

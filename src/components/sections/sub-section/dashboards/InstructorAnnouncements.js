@@ -19,7 +19,7 @@ const InstructorAnnouncements = () => {
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/instructor-courses', {
+      const response = await fetch('https://lms-server.cosha.eu/api/instructor-courses', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ const InstructorAnnouncements = () => {
   const fetchAnnouncements = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/announcements/instructor/announcements', {
+      const response = await fetch('https://lms-server.cosha.eu/api/announcements/instructor/announcements', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -74,8 +74,8 @@ const InstructorAnnouncements = () => {
     try {
       const token = localStorage.getItem('token');
       const url = editingAnnouncement 
-        ? `http://localhost:5000/api/announcements/instructor/announcements/${editingAnnouncement._id}`
-        : 'http://localhost:5000/api/announcements/instructor/announcements';
+        ? `https://lms-server.cosha.eu/api/announcements/instructor/announcements/${editingAnnouncement._id}`
+        : 'https://lms-server.cosha.eu/api/announcements/instructor/announcements';
       
       const method = editingAnnouncement ? 'PUT' : 'POST';
 
@@ -110,7 +110,7 @@ const InstructorAnnouncements = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/announcements/instructor/announcements/${id}`, {
+      const response = await fetch(`https://lms-server.cosha.eu/api/announcements/instructor/announcements/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

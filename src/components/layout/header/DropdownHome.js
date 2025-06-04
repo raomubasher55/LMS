@@ -1,3 +1,4 @@
+"use client"
 import DropdownPrimary from "./DropdownPrimary";
 
 const DropdownHome = () => {

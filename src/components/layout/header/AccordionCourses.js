@@ -1,3 +1,5 @@
+"use client"
+
 import accordions from "@/libs/accordions";
 import React from "react";
 import MobileAccordion from "./MobileAccordion";

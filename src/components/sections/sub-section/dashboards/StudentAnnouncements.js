@@ -18,7 +18,7 @@ const StudentAnnouncements = () => {
       }
 
       console.log('Fetching student announcements...');
-      const response = await fetch('http://localhost:5000/api/announcements/student/announcements', {
+      const response = await fetch('https://lms-server.cosha.eu/api/announcements/student/announcements', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ const StudentAnnouncements = () => {
   const markAsRead = async (announcementId) => {
     try {
       const token = localStorage.getItem('token');
-      await fetch(`http://localhost:5000/api/announcements/announcements/${announcementId}/read`, {
+      await fetch(`https://lms-server.cosha.eu/api/announcements/announcements/${announcementId}/read`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

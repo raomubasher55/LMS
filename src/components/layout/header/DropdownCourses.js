@@ -1,3 +1,4 @@
+"use client"
 import DropdownContainer from "@/components/shared/containers/DropdownContainer";
 import React from "react";
 import DropdownItems from "./DropdownItems";

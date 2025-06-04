@@ -1,3 +1,4 @@
+"use client"
 import FooterHeading from "@/components/shared/headings/FooterHeading";
 import FooterNavItem from "./FooterNavItem";
 

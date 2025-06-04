@@ -1,3 +1,4 @@
+"use client"
 // components/RecentPosts.js
 import { useEffect, useState } from 'react';
 import Image from "next/image";
