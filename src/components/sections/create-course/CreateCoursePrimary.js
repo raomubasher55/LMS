@@ -271,6 +271,7 @@ const CreateCoursePrimary = () => {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
+              withCredentials: true, // <--- add this!
           onUploadProgress: (progressEvent) => {
             const progress = Math.round(
               (progressEvent.loaded * 100) / progressEvent.total
