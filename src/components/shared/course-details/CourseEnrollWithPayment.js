@@ -2,18 +2,15 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { loadStripe } from "@stripe/stripe-js";
 import PopupVideo from "../popup/PopupVideo";
 import axios from "axios";
 import useSweetAlert from "@/hooks/useSweetAlert";
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 const CourseEnrollWithPayment = ({ course }) => {
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
-  const [showPayment, setShowPayment] = useState(false);
+  const [paymentData, setPaymentData] = useState(null);
   const createAlert = useSweetAlert();
   const router = useRouter();
 
@@ -108,7 +105,7 @@ const CourseEnrollWithPayment = ({ course }) => {
         return;
       }
 
-      // Create payment session
+      // Create payment session with Maxicash
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payments/create-session`,
         { courseId: course._id },
@@ -116,8 +113,13 @@ const CourseEnrollWithPayment = ({ course }) => {
       );
 
       if (response.data.success) {
-        // Redirect to Stripe checkout
-        window.location.href = response.data.url;
+        // Store payment data and show form
+        setPaymentData(response.data);
+        
+        // Automatically submit the form to redirect to Maxicash
+        setTimeout(() => {
+          document.getElementById('maxicash-payment-form').submit();
+        }, 500);
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -253,9 +255,33 @@ const CourseEnrollWithPayment = ({ course }) => {
 
         <span className="text-size-13 text-contentColor dark:text-contentColor-dark leading-1.8 block text-center">
           <i className="icofont-ui-rotation mr-1"></i> 
-          {isFree ? "Free Forever Access" : "45-Days Money-Back Guarantee"}
+          {isFree ? "Free Forever Access" : "Secure Payment via MaxiCash"}
         </span>
       </div>
+
+      {/* Hidden Maxicash Payment Form */}
+      {paymentData && (
+        <form
+          id="maxicash-payment-form"
+          action={paymentData.gatewayUrl}
+          method="POST"
+          style={{ display: 'none' }}
+        >
+          <input type="hidden" name="PayType" value={paymentData.paymentData.PayType} />
+          <input type="hidden" name="Amount" value={paymentData.paymentData.Amount} />
+          <input type="hidden" name="Currency" value={paymentData.paymentData.Currency} />
+          <input type="hidden" name="Phone" value={paymentData.paymentData.Phone} />
+          <input type="hidden" name="Email" value={paymentData.paymentData.Email} />
+          <input type="hidden" name="MerchantID" value={paymentData.paymentData.MerchantID} />
+          <input type="hidden" name="MerchantPassword" value={paymentData.paymentData.MerchantPassword} />
+          <input type="hidden" name="Language" value={paymentData.paymentData.Language} />
+          <input type="hidden" name="Reference" value={paymentData.paymentData.Reference} />
+          <input type="hidden" name="accepturl" value={paymentData.paymentData.accepturl} />
+          <input type="hidden" name="cancelurl" value={paymentData.paymentData.cancelurl} />
+          <input type="hidden" name="declineurl" value={paymentData.paymentData.declineurl} />
+          <input type="hidden" name="notifyurl" value={paymentData.paymentData.notifyurl} />
+        </form>
+      )}
 
       {/* Course Details */}
       <ul>

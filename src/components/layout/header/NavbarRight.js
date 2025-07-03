@@ -5,6 +5,7 @@ import Link from "next/link";
 import MobileMenuOpen from "@/components/shared/buttons/MobileMenuOpen";
 import useIsTrue from "@/hooks/useIsTrue";
 import LoginButton from "./LoginButton";
+import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 const NavbarRight = () => {
   const isHome4 = useIsTrue("/home-4");
   const isHome4Dark = useIsTrue("/home-4-dark");
@@ -21,6 +22,11 @@ const NavbarRight = () => {
             <DropdownCart />
           </li>
         )}
+        {/* Language Switcher */}
+        <li className="hidden lg:block px-2">
+          <LanguageSwitcher />
+        </li>
+        
         {isHome4 || isHome4Dark || isHome5 || isHome5Dark ? (
           ""
         ) : (

@@ -1,3 +1,4 @@
+"use client";
 import HeroPrimary from "@/components/sections/hero-banners/HeroPrimary";
 import StudentAssignmentsContent from "@/components/sections/sub-section/dashboards/StudentAssignmentsContent";
 import { useSearchParams } from "next/navigation";

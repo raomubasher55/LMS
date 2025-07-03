@@ -110,7 +110,7 @@ const CreateCoursePrimary = () => {
           title: `Chapter ${prev.chapters.length + 1}`,
           order: prev.chapters.length + 1,
           video: {
-            file: null,
+            url: "",
             duration: 0,
             title: "",
           },
@@ -142,31 +142,9 @@ const CreateCoursePrimary = () => {
     setFormData((prev) => ({ ...prev, chapters: updatedChapters }));
   };
 
-  const handleChapterVideoUpload = (e, chapterIndex) => {
-    const file = e.target.files[0];
-    if (file) {
-      const validTypes = [
-        "video/mp4",
-        "video/webm",
-        "video/ogg",
-        "video/quicktime",
-      ];
-      if (!validTypes.includes(file.type)) {
-        alert("Please upload MP4, WebM, Ogg, or QuickTime video");
-        return;
-      }
-
-      if (file.size > 500 * 1024 * 1024) {
-        alert("Video must be smaller than 500MB");
-        return;
-      }
-
-      updateChapter(chapterIndex, "video", {
-        file: file,
-        title: file.name,
-        duration: 0,
-      });
-    }
+  const handleChapterVideoUrlChange = (e, chapterIndex) => {
+    const url = e.target.value;
+    updateChapter(chapterIndex, "video.url", url);
   };
 
   const removeBanner = () => {
@@ -248,14 +226,17 @@ const CreateCoursePrimary = () => {
           chapter.isLockedUntilQuizPass ? "true" : "false"
         );
 
-        if (chapter.video?.file) {
-          formDataToSend.append(`chapterVideos[${index}]`, chapter.video.file);
+        if (chapter.video?.url) {
           formDataToSend.append(
-            `chapterVideos[${index}][title]`,
-            chapter.video.title
+            `chapters[${index}][video][url]`,
+            chapter.video.url
           );
           formDataToSend.append(
-            `chapterVideos[${index}][duration]`,
+            `chapters[${index}][video][title]`,
+            chapter.video.title || "Chapter Video"
+          );
+          formDataToSend.append(
+            `chapters[${index}][video][duration]`,
             chapter.video.duration || 0
           );
         }
@@ -721,30 +702,50 @@ const CreateCoursePrimary = () => {
                                     className="w-full mb-3 p-2 border rounded bg-transparent"
                                   />
 
-                                  {/* Video Upload */}
+                                  {/* Video URL Input */}
                                   <div className="mb-3">
                                     <label className="block mb-1">
-                                      Chapter Video
+                                      Chapter Video URL
                                     </label>
                                     <input
-                                      type="file"
-                                      name={`chapterVideos[${index}]`}
-                                      accept="video/mp4,video/webm,video/ogg"
+                                      type="url"
+                                      name={`chapterVideos[${index}][url]`}
+                                      value={chapter.video?.url || ""}
                                       onChange={(e) =>
-                                        handleChapterVideoUpload(e, index)
+                                        handleChapterVideoUrlChange(e, index)
                                       }
-                                      className="w-full p-2 border rounded"
+                                      placeholder="Enter video URL (YouTube, Vimeo, etc.)"
+                                      className="w-full p-2 border rounded bg-transparent"
                                     />
-                                    {chapter.video?.file && (
-                                      <div className="mt-2 text-sm">
-                                        <span>
-                                          Uploaded: {chapter.video.title}
-                                        </span>
+                                    <div className="mt-2 grid grid-cols-2 gap-2">
+                                      <div>
+                                        <label className="block text-sm mb-1">
+                                          Video Title
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name={`chapterVideos[${index}][title]`}
+                                          value={chapter.video?.title || ""}
+                                          onChange={(e) =>
+                                            updateChapter(
+                                              index,
+                                              "video.title",
+                                              e.target.value
+                                            )
+                                          }
+                                          placeholder="Video title"
+                                          className="w-full p-1 border rounded bg-transparent text-sm"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="block text-sm mb-1">
+                                          Duration (seconds)
+                                        </label>
                                         <input
                                           type="number"
                                           name={`chapterVideos[${index}][duration]`}
                                           min={1}
-                                          value={chapter.video.duration || 0}
+                                          value={chapter.video?.duration || 0}
                                           onChange={(e) =>
                                             updateChapter(
                                               index,
@@ -752,17 +753,11 @@ const CreateCoursePrimary = () => {
                                               parseInt(e.target.value) || 0
                                             )
                                           }
-                                          placeholder="Duration (seconds)"
-                                          className="ml-2 p-1 border rounded w-20 bg-transparent"
-                                        />{" "}
-                                        <span>Duration in sec</span>
+                                          placeholder="Duration"
+                                          className="w-full p-1 border rounded bg-transparent text-sm"
+                                        />
                                       </div>
-                                    )}
-                                    <input
-                                      type="hidden"
-                                      name={`chapterVideos[${index}][title]`} // 🔑 REQUIRED for backend
-                                      value={chapter.video.title}
-                                    />
+                                    </div>
                                   </div>
 
                                   {/* Quiz/Assignment Toggles */}

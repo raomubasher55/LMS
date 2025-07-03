@@ -2,6 +2,7 @@
 import HeadingLg from "@/components/shared/headings/HeadingLg";
 import PagragraphHero from "@/components/shared/paragraphs/PagragraphHero";
 import HreoName from "@/components/shared/section-names/HreoName";
+import TranslatedText from "@/components/shared/TranslatedText";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import about1 from "@/assets/images/about/about_1.png";
@@ -20,13 +21,18 @@ const Hero1 = () => {
         <div className="container grid grid-cols-1 lg:grid-cols-2 items-center">
           {/* banner Left  */}
           <div data-aos="fade-up">
-            <HreoName>Tanga Academy</HreoName>
+            <HreoName>
+              <TranslatedText>Tanga Academy</TranslatedText>
+            </HreoName>
             <HeadingLg color="white">
-              Empower Your Future with Smart Learning
+              <TranslatedText>
+                Renforcez votre avenir avec un apprentissage intelligent
+              </TranslatedText>
             </HeadingLg>
             <PagragraphHero color="white">
-              Tanga Academy offers a modern, engaging, and flexible way to gain
-              knowledge and master new skills. Start your journey today.
+              <TranslatedText>
+                Tanga Academy offre un moyen moderne, engageant et flexible d'acquérir des connaissances et de maîtriser de nouvelles compétences. Commencez votre voyage aujourd'hui.
+              </TranslatedText>
             </PagragraphHero>
 
             <div className="mt-30px md:mt-45px">
@@ -34,13 +40,13 @@ const Hero1 = () => {
                 href="/courses"
                 className="text-sm md:text-size-15 font-semibold text-darkdeep2 bg-whiteColor border border-whiteColor px-5 md:px-30px py-3 md:py-4 hover:text-whiteColor hover:bg-darkblack rounded inline-block mr-6px md:mr-30px shadow-hero-action dark:bg-whiteColor-dark dark:hover:bg-whiteColor dark:text-whiteColor dark:hover:text-whiteColor-dark dark:border-none"
               >
-                View Courses
+                <TranslatedText>Voir les cours</TranslatedText>
               </Link>
               <Link
                 href="/courses"
                 className="text-sm md:text-size-15 font-semibold text-whiteColor py-3 md:py-4 hover:text-secondaryColor inline-block"
               >
-                Find out more <i className="icofont-long-arrow-right"></i>
+                <TranslatedText>En savoir plus</TranslatedText> <i className="icofont-long-arrow-right"></i>
               </Link>
             </div>
           </div>

@@ -12,6 +12,8 @@ import FixedShadow from "@/components/shared/others/FixedShadow";
 import dynamic from "next/dynamic";
 import { SocketProvider } from "@/contexts/SocketContext";
 import { UnreadMessagesProvider } from "@/contexts/UnreadMessagesContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import LanguageDebugger from "@/components/shared/LanguageDebugger";
 import Script from "next/script";
 
 const PreloaderPrimary = dynamic(
@@ -51,18 +53,23 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
           id="chunk-error-handler"
         />
-        <SocketProvider>
-          <UnreadMessagesProvider>
-            <PreloaderPrimary />
-            {children}
+        <LanguageProvider>
+          <SocketProvider>
+            <UnreadMessagesProvider>
+              <PreloaderPrimary />
+              {children}
 
-            {/* theme fixed shadow */}
-            <div>
-              <FixedShadow />
-              <FixedShadow align={"right"} />
-            </div>
-          </UnreadMessagesProvider>
-        </SocketProvider>
+              {/* Language Debugger (temporary for testing) */}
+              <LanguageDebugger />
+
+              {/* theme fixed shadow */}
+              <div>
+                <FixedShadow />
+                <FixedShadow align={"right"} />
+              </div>
+            </UnreadMessagesProvider>
+          </SocketProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

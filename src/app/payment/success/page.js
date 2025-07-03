@@ -11,33 +11,35 @@ const PaymentSuccessContent = () => {
   const [status, setStatus] = useState('loading'); // loading, success, error
   const [message, setMessage] = useState('');
   const [course, setCourse] = useState(null);
+  const [transactionId, setTransactionId] = useState(null);
   const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  const reference = searchParams.get('reference');
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted && sessionId) {
+    if (mounted && reference) {
       handlePaymentVerification();
-    } else if (mounted && !sessionId) {
+    } else if (mounted && !reference) {
       setStatus('error');
-      setMessage('Invalid payment session');
+      setMessage('Invalid payment reference');
     }
-  }, [sessionId, mounted]);
+  }, [reference, mounted]);
 
   const handlePaymentVerification = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payments/success?sessionId=${sessionId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payments/success?reference=${reference}`
       );
 
       if (response.data.success) {
         setStatus('success');
         setMessage(response.data.message);
         setCourse(response.data.course);
+        setTransactionId(response.data.transactionId);
       } else {
         setStatus('error');
         setMessage(response.data.message || 'Payment verification failed');
@@ -80,7 +82,7 @@ const PaymentSuccessContent = () => {
                   Verifying Payment...
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Please wait while we confirm your payment.
+                  Please wait while we confirm your MaxiCash payment.
                 </p>
               </>
             )}
@@ -104,9 +106,19 @@ const PaymentSuccessContent = () => {
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                       Course Enrolled:
                     </h3>
-                    <p className="text-primaryColor font-medium">
+                    <p className="text-primaryColor font-medium mb-2">
                       {course.title}
                     </p>
+                    {reference && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Reference: {reference}
+                      </p>
+                    )}
+                    {transactionId && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Transaction ID: {transactionId}
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -123,6 +135,14 @@ const PaymentSuccessContent = () => {
                   >
                     View My Courses
                   </Link>
+                  {course && (
+                    <Link
+                      href={`/course/${course.id}/learn`}
+                      className="block w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                    >
+                      Start Learning Now
+                    </Link>
+                  )}
                 </div>
               </>
             )}
@@ -140,6 +160,17 @@ const PaymentSuccessContent = () => {
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
                   {message}
                 </p>
+                
+                {reference && (
+                  <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      Reference: {reference}
+                    </p>
+                    <p className="text-xs text-red-500 dark:text-red-400 mt-1">
+                      Please include this reference when contacting support.
+                    </p>
+                  </div>
+                )}
                 
                 <div className="space-y-3">
                   <Link

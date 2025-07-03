@@ -6,6 +6,14 @@ import { notFound } from "next/navigation";
 export async function generateMetadata({ params }) {
   const { slug } = params;
   
+  // Skip API calls during build time
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_API_URL?.startsWith('http')) {
+    return {
+      title: "Blog | LMSP",
+      description: "Blog post from LMSP learning platform"
+    };
+  }
+  
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${slug}`, {
       cache: 'no-store'
@@ -50,6 +58,24 @@ export async function generateMetadata({ params }) {
 
 const BlogDetails = async ({ params }) => {
   const { slug } = params;
+  
+  // Skip API calls during build time
+  if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_API_URL?.startsWith('http')) {
+    const mockBlog = {
+      title: "Blog Post",
+      excerpt: "This is a blog post excerpt.",
+      content: "Blog content will be loaded at runtime."
+    };
+    
+    return (
+      <PageWrapper>
+        <main>
+          <BlogDetailsMainNew blog={mockBlog} />
+          <ThemeController />
+        </main>
+      </PageWrapper>
+    );
+  }
   
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blogs/${slug}`, {

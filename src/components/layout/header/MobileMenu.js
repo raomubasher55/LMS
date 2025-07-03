@@ -5,6 +5,7 @@ import MobileMenuSearch from "./MobileMenuSearch";
 import MobileMyAccount from "./MobileMyAccount";
 import MobileSocial from "./MobileSocial";
 import MobileMenuClose from "@/components/shared/buttons/MobileMenuClose";
+import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 import useIsTrue from "@/hooks/useIsTrue";
 
 const MobileMenu = () => {
@@ -16,6 +17,12 @@ const MobileMenu = () => {
       {/*  mobile menu wrapper */}
       <div className="px-5 md:px-30px pt-5 md:pt-10 pb-50px h-full overflow-y-auto">
         <MobileMenuSearch />
+        
+        {/* Mobile Language Switcher */}
+        <div className="mb-6 flex justify-center">
+          <LanguageSwitcher />
+        </div>
+        
         {/*  mobile menu accordions */}
         {isHome2Dart ? <MobileItems2 /> : <MobileMenuItems />}
         {/*  my account accordion */}
