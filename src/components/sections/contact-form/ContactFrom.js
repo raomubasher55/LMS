@@ -1,4 +1,5 @@
 import ButtonPrimary from "@/components/shared/buttons/ButtonPrimary";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const ContactFrom = () => {
   return (
@@ -14,21 +15,20 @@ const ContactFrom = () => {
               className="text-size-23 md:text-size-44 font-bold leading-10 md:leading-70px text-blackColor dark:text-blackColor-dark"
               data-aos="fade-up"
             >
-              Drop Us a Line
+              <TranslatedText>Laissez-nous un message</TranslatedText>
             </h4>
             <p
               data-aos="fade-up"
               className="text-size-13 md:text-base leading-5 md:leading-30px text-contentColor dark:text-contentColor-dark"
             >
-              Your email address will not be published. Required fields are
-              marked *
+              <TranslatedText>Votre adresse e-mail ne sera pas publiée. Les champs obligatoires sont marqués *</TranslatedText>
             </p>
           </div>
           <div className="grid grid-cols-1 xl:grid-cols-2 mb-30px gap-30px">
             <div data-aos="fade-up" className="relative">
               <input
                 type="text"
-                placeholder="Enter your name*"
+                placeholder="Entrez votre nom*"
                 className="w-full pl-26px bg-transparent focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor2 dark:border-borderColor2-dark placeholder:text-placeholder placeholder:opacity-80 h-15 leading-15 font-medium rounded"
               />
 
@@ -39,7 +39,7 @@ const ContactFrom = () => {
             <div data-aos="fade-up" className="relative">
               <input
                 type="email"
-                placeholder="Enter Email Address*"
+                placeholder="Entrez votre adresse e-mail*"
                 className="w-full pl-26px bg-transparent focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor2 dark:border-borderColor2-dark placeholder:text-placeholder placeholder:opacity-80 h-15 leading-15 font-medium rounded"
               />
 
@@ -50,7 +50,7 @@ const ContactFrom = () => {
             <div data-aos="fade-up" className="relative">
               <input
                 type="text"
-                placeholder="Write Service Type"
+                placeholder="Écrivez le type de service"
                 className="w-full pl-26px bg-transparent focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor2 dark:border-borderColor2-dark placeholder:text-placeholder placeholder:opacity-80 h-15 leading-15 font-medium rounded"
               />
 
@@ -61,7 +61,7 @@ const ContactFrom = () => {
             <div data-aos="fade-up" className="relative">
               <input
                 type="text"
-                placeholder="Enter Your Phone"
+                placeholder="Entrez votre numéro de téléphone"
                 className="w-full pl-26px bg-transparent focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor2 dark:border-borderColor2-dark placeholder:text-placeholder placeholder:opacity-80 h-15 leading-15 font-medium rounded"
               />
 
@@ -73,7 +73,7 @@ const ContactFrom = () => {
 
           <div className="relative" data-aos="fade-up">
             <textarea
-              placeholder="Enter your Massage here"
+              placeholder="Entrez votre message ici"
               className="w-full pl-26px bg-transparent text-contentColor dark:text-contentColor-dark border border-borderColor2 dark:border-borderColor2-dark placeholder:text-placeholder placeholder:opacity-80 rounded"
               cols="30"
               rows="10"
@@ -84,7 +84,7 @@ const ContactFrom = () => {
           </div>
 
           <div className="mt-30px" data-aos="fade-up">
-            <ButtonPrimary type={"submit"}>Post a Comment</ButtonPrimary>
+            <ButtonPrimary type={"submit"}><TranslatedText>Poster un commentaire</TranslatedText></ButtonPrimary>
           </div>
         </form>
       </div>

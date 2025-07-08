@@ -61,13 +61,12 @@ const CoursesFilter = () => {
           <div className="flex gap-15px lg:gap-30px flex-wrap lg:flex-nowrap items-center">
             {/* courses Left */}
             <div className="basis-full lg:basis-[500px]" data-aos="fade-up">
-              <SectionName>Course List</SectionName>
+              <SectionName><TranslatedText>Liste des cours</TranslatedText></SectionName>
               <HeadingPrimaryXl>
                 <TranslatedText>
-
+                  Le cours en ligne parfait <br className="hidden lg:block" />
+                  pour votre carrière
                 </TranslatedText>
-  Le cours en ligne parfait <br className="hidden lg:block" />
- pour votre carrière
               </HeadingPrimaryXl>
             </div>
 

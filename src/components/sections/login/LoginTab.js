@@ -9,13 +9,14 @@ import shapImage3 from "@/assets/images/education/hero_shape3.png";
 import shapImage4 from "@/assets/images/education/hero_shape4.png";
 import shapImage5 from "@/assets/images/education/hero_shape5.png";
 import useTab from "@/hooks/useTab";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const LoginTab = () => {
   const { currentIdx, handleTabClick } = useTab();
   const tabButtons = [
-    { name: "Login", content: <LoginForm /> },
+    { name: <TranslatedText>Connexion</TranslatedText>, content: <LoginForm /> },
     {
-      name: " Sing up",
+      name: <TranslatedText>S'inscrire</TranslatedText>,
       content: <SignUpForm />,
     },
   ];

@@ -8,6 +8,7 @@ import BlogContactForm from "./BlogContactForm";
 import BlogTags from "./BlogTags";
 import BlogSocials from "./BlogSocials";
 import BlogSearch from "./BlogSearch";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const BlogsSidebar = ( {blog} ) => {
   const author = blog.author
@@ -27,7 +28,7 @@ const BlogsSidebar = ( {blog} ) => {
         data-aos="fade-up"
       >
         <h4 className="text-size-22 text-blackColor dark:text-blackColor-dark font-bold pl-2 before:w-0.5 relative before:h-[21px] before:bg-primaryColor before:absolute before:bottom-[5px] before:left-0 leading-30px mb-25px">
-          Photo Gallery
+          <TranslatedText>Galerie de photos</TranslatedText>
         </h4>
         <ImageGallery gallary={"mini"} />
       </div>

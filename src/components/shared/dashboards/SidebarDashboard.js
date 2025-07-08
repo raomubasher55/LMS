@@ -4,6 +4,7 @@ import ItemsDashboard from "./ItemsDashboard";
 import { useEffect, useState } from "react";
 import useUnreadMessages from "../../../hooks/useUnreadMessages";
 import UnreadMessagesContext from "../../../contexts/UnreadMessagesContext";
+import TranslatedText from "../TranslatedText";
 
 const SidebarDashboard = () => {
   const pathname = usePathname();
@@ -43,10 +44,10 @@ const SidebarDashboard = () => {
 
   const adminItems = [
     {
-      title: `WELCOME, ${user?.firstName + " " +  user?.lastName}` || "Welcome Admin",
+      title: `BIENVENUE, ${user?.firstName + " " +  user?.lastName}` || "Bienvenue Admin",
       items: [
         {
-          name: "Dashboard",
+          name: <TranslatedText>Tableau de bord</TranslatedText>,
           path: "/dashboards/admin-dashboard",
           icon: (
             <svg
@@ -67,7 +68,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "My Profile",
+          name: <TranslatedText>Mon profil</TranslatedText>,
           path: "/dashboards/admin-profile",
           icon: (
             <svg
@@ -88,7 +89,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Message",
+          name: <TranslatedText>Messages</TranslatedText>,
           path: "/dashboards/admin-message",
           tag: unreadCount > 0 ? unreadCount : null,
           icon: (
@@ -110,7 +111,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Users & Instructors",
+          name: <TranslatedText>Utilisateurs et instructeurs</TranslatedText>,
           path: "/dashboards/admin-userdata",
           icon: (
             <svg
@@ -134,7 +135,7 @@ const SidebarDashboard = () => {
           ),
         },
                 {
-          name: "Instructors Applications",
+          name: <TranslatedText>Candidatures d'instructeurs</TranslatedText>,
           path: "/dashboards/admin-instructor-applications",
           icon: (
             <svg
@@ -156,7 +157,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Courses",
+          name: <TranslatedText>Cours</TranslatedText>,
           path: "/dashboards/admin-course",
           icon: (
             <svg
@@ -176,7 +177,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Reviews",
+          name: <TranslatedText>Avis</TranslatedText>,
           path: "/dashboards/admin-reviews",
           icon: (
             <svg
@@ -196,7 +197,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Blog Management",
+          name: <TranslatedText>Gestion des blogs</TranslatedText>,
           path: "/dashboards/admin-blog",
           icon: (
             <svg
@@ -217,7 +218,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Withdrawals",
+          name: <TranslatedText>Retraits</TranslatedText>,
           path: "/dashboards/admin-withdrawals",
           icon: (
             <svg
@@ -238,7 +239,7 @@ const SidebarDashboard = () => {
           ),
         },
                 {
-          name: "Newsletter Subscriber",
+          name: <TranslatedText>Abonnés newsletter</TranslatedText>,
           path: "/dashboards/admin-newsletter-subscriber",
           icon: (
             <svg
@@ -261,10 +262,10 @@ const SidebarDashboard = () => {
       ],
     },
     {
-      title: "USER",
+      title: <TranslatedText>UTILISATEUR</TranslatedText>,
       items: [
         {
-          name: "Settings",
+          name: <TranslatedText>Paramètres</TranslatedText>,
           path: "/dashboards/admin-settings",
           icon: (
             <svg
@@ -285,7 +286,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Logout",
+          name: <TranslatedText>Déconnexion</TranslatedText>,
           path: "#",
           onClick: handleLogout,
           icon: (
@@ -311,10 +312,10 @@ const SidebarDashboard = () => {
   ];
   const instructorItems = [
     {
-      title: user?.firstName + " " +  user?.lastName || "Instructor",
+      title: user?.firstName + " " +  user?.lastName || "Instructeur",
       items: [
         {
-          name: "Dashboard",
+          name: <TranslatedText>Tableau de bord</TranslatedText>,
           path: "/dashboards/instructor-dashboard",
           icon: (
             <svg
@@ -335,7 +336,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "My Profile",
+          name: <TranslatedText>Mon profil</TranslatedText>,
           path: "/dashboards/instructor-profile",
           icon: (
             <svg
@@ -356,7 +357,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Message",
+          name: <TranslatedText>Messages</TranslatedText>,
           path: "/dashboards/instructor-message",
           tag: unreadCount > 0 ? unreadCount : null,
           icon: (
@@ -378,7 +379,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Wishlist",
+          name: <TranslatedText>Liste de souhaits</TranslatedText>,
           path: "/dashboards/instructor-wishlist",
           icon: (
             <svg
@@ -398,7 +399,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Reviews",
+          name: <TranslatedText>Avis</TranslatedText>,
           path: "/dashboards/instructor-reviews",
           icon: (
             <svg
@@ -418,7 +419,7 @@ const SidebarDashboard = () => {
           ),
         },      
         {
-          name: "Order History",
+          name: <TranslatedText>Historique des commandes</TranslatedText>,
           path: "/dashboards/instructor-order-history",
           icon: (
             <svg
@@ -440,7 +441,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Withdrawals",
+          name: <TranslatedText>Retraits</TranslatedText>,
           path: "/dashboards/instructor-withdrawals",
           icon: (
             <svg
@@ -509,7 +510,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Create Quizes",
+          name: <TranslatedText>Créer des quiz</TranslatedText>,
           path: "/dashboards/instructor-my-quiz-attempts",
           icon: (
             <svg
@@ -551,7 +552,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Quiz Analytics",
+          name: <TranslatedText>Analyses de quiz</TranslatedText>,
           path: "/dashboards/instructor-quiz-analytics",
           icon: (
             <svg
@@ -573,7 +574,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Student Progress",
+          name: <TranslatedText>Progrès des étudiants</TranslatedText>,
           path: "/dashboards/instructor-student-progress",
           icon: (
             <svg
@@ -597,7 +598,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Create Assignments",
+          name: <TranslatedText>Créer des devoirs</TranslatedText>,
           path: "/dashboards/instructor-create-assignments",
           icon: (
             <svg
@@ -618,7 +619,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Assignments",
+          name: <TranslatedText>Devoirs</TranslatedText>,
           path: "/dashboards/instructor-assignments",
           icon: (
             <svg
@@ -642,10 +643,10 @@ const SidebarDashboard = () => {
     },
 
     {
-      title: "USER",
+      title: <TranslatedText>UTILISATEUR</TranslatedText>,
       items: [
         {
-          name: "Settings",
+          name: <TranslatedText>Paramètres</TranslatedText>,
           path: "/dashboards/instructor-settings",
           icon: (
             <svg
@@ -666,7 +667,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Logout",
+          name: <TranslatedText>Déconnexion</TranslatedText>,
           path: "#",
           onClick: handleLogout,
           icon: (
@@ -693,10 +694,10 @@ const SidebarDashboard = () => {
 
   const studentItems = [
     {
-      title: `WELCOME, ${user?.firstName + " " +  user?.lastName}`,
+      title: `BIENVENUE, ${user?.firstName + " " +  user?.lastName}`,
       items: [
         {
-          name: "Dashboard",
+          name: <TranslatedText>Tableau de bord</TranslatedText>,
           path: "/dashboards/student-dashboard",
           icon: (
             <svg
@@ -717,7 +718,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "My Profile",
+          name: <TranslatedText>Mon profil</TranslatedText>,
           path: "/dashboards/student-profile",
           icon: (
             <svg
@@ -738,7 +739,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Message",
+          name: <TranslatedText>Messages</TranslatedText>,
           path: "/dashboards/student-message",
           tag: unreadCount > 0 ? unreadCount : null,
           icon: (
@@ -760,7 +761,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Enrolled Courses",
+          name: <TranslatedText>Cours inscrits</TranslatedText>,
           path: "/dashboards/student-enrolled-courses",
           icon: (
             <svg
@@ -780,7 +781,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Wishlist",
+          name: <TranslatedText>Liste de souhaits</TranslatedText>,
           path: "/dashboards/student-wishlist",
           icon: (
             <svg
@@ -800,7 +801,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Reviews",
+          name: <TranslatedText>Avis</TranslatedText>,
           path: "/dashboards/student-reviews",
           icon: (
             <svg
@@ -820,7 +821,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Announcements",
+          name: <TranslatedText>Annonces</TranslatedText>,
           path: "/dashboards/student-announcements",
           icon: (
             <svg
@@ -841,7 +842,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "My Quiz Attempts",
+          name: <TranslatedText>Mes tentatives de quiz</TranslatedText>,
           path: "/dashboards/student-my-quiz-attempts",
           icon: (
             <svg
@@ -863,7 +864,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Assignments",
+          name: <TranslatedText>Devoirs</TranslatedText>,
           path: "/dashboards/student-assignments",
           icon: (
             <svg
@@ -884,7 +885,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Payment Methods",
+          name: <TranslatedText>Méthodes de paiement</TranslatedText>,
           path: "/dashboards/student-payment-methods",
           icon: (
             <svg
@@ -905,7 +906,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Order History",
+          name: <TranslatedText>Historique des commandes</TranslatedText>,
           path: "/dashboards/student-order-history",
           icon: (
             <svg
@@ -948,7 +949,7 @@ const SidebarDashboard = () => {
           ),
         },
         {
-          name: "Logout",
+          name: <TranslatedText>Déconnexion</TranslatedText>,
           path: "#",
           onClick: handleLogout,
           icon: (
@@ -1000,20 +1001,20 @@ const SidebarDashboard = () => {
               className="p-6 bg-white rounded-lg shadow-lg w-full max-w-sm"
               onClick={(e) => e.stopPropagation()} // Prevent click from closing
             >
-              <h3 className="text-lg font-medium mb-4">Confirm Logout</h3>
-              <p className="mb-6">Are you sure you want to logout?</p>
+              <h3 className="text-lg font-medium mb-4"><TranslatedText>Confirmer la déconnexion</TranslatedText></h3>
+              <p className="mb-6"><TranslatedText>Êtes-vous sûr de vouloir vous déconnecter?</TranslatedText></p>
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={cancelLogout}
                   className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
                 >
-                  Cancel
+                  <TranslatedText>Annuler</TranslatedText>
                 </button>
                 <button
                   onClick={confirmLogout}
                   className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                 >
-                  Logout
+                  <TranslatedText>Déconnexion</TranslatedText>
                 </button>
               </div>
             </div>

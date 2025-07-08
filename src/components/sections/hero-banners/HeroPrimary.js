@@ -4,6 +4,7 @@ import BookImage from "@/components/shared/animaited-images/BookImage";
 import GlobImage from "@/components/shared/animaited-images/GlobImage";
 import BalbImage from "@/components/shared/animaited-images/BalbImage";
 import TriangleImage from "@/components/shared/animaited-images/TriangleImage";
+import TranslatedText from "@/components/shared/TranslatedText";
 const HeroPrimary = ({ title, path }) => {
   return (
     <section data-aos="fade-up">
@@ -27,7 +28,7 @@ const HeroPrimary = ({ title, path }) => {
                   href="/"
                   className="text-lg text-blackColor2 dark:text-blackColor2-dark hover:text-primaryColor dark:hover:text-primaryColor"
                 >
-                  Home <i className="icofont-simple-right"></i>
+                  <TranslatedText>Accueil</TranslatedText> <i className="icofont-simple-right"></i>
                 </Link>
               </li>
               <li>

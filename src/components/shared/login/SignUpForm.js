@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const SignUpForm = () => {
   const [formData, setFormData] = useState({
@@ -76,15 +77,15 @@ const SignUpForm = () => {
     <div className="transition-opacity duration-150 ease-linear">
       <div className="text-center">
         <h3 className="text-size-32 font-bold text-blackColor dark:text-blackColor-dark mb-2 leading-normal">
-          Sign Up
+          <TranslatedText>S'inscrire</TranslatedText>
         </h3>
         <p className="text-contentColor dark:text-contentColor-dark mb-15px">
-          Already have an account?
+          <TranslatedText>Vous avez déjà un compte?</TranslatedText>
           <a
             href="/login"
             className="hover:text-primaryColor relative after:absolute after:left-0 after:bottom-0.5 after:w-0 after:h-0.5 after:bg-primaryColor after:transition-all after:duration-300 hover:after:w-full"
           >
-            Log In
+            <TranslatedText>Se connecter</TranslatedText>
           </a>
         </p>
       </div>
@@ -96,12 +97,12 @@ const SignUpForm = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-30px gap-y-25px mb-25px">
           <div>
             <label className="text-contentColor dark:text-contentColor-dark mb-10px block">
-              First Name
+              <TranslatedText>Prénom</TranslatedText>
             </label>
             <input
               type="text"
               name="firstName"
-              placeholder="First Name"
+              placeholder="Prénom"
               value={formData.firstName}
               onChange={handleChange}
               className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded"
@@ -109,12 +110,12 @@ const SignUpForm = () => {
           </div>
           <div>
             <label className="text-contentColor dark:text-contentColor-dark mb-10px block">
-              Last Name
+              <TranslatedText>Nom de famille</TranslatedText>
             </label>
             <input
               type="text"
               name="lastName"
-              placeholder="Last Name"
+              placeholder="Nom de famille"
               value={formData.lastName}
               onChange={handleChange}
               className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded"
@@ -125,12 +126,12 @@ const SignUpForm = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-30px gap-y-25px mb-25px">
           <div>
             <label className="text-contentColor dark:text-contentColor-dark mb-10px block">
-              Username
+              <TranslatedText>Nom d'utilisateur</TranslatedText>
             </label>
             <input
               type="text"
               name="username"
-              placeholder="Username"
+              placeholder="Nom d'utilisateur"
               value={formData.username}
               onChange={handleChange}
               className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded"
@@ -138,12 +139,12 @@ const SignUpForm = () => {
           </div>
           <div>
             <label className="text-contentColor dark:text-contentColor-dark mb-10px block">
-              Email
+              <TranslatedText>Email</TranslatedText>
             </label>
             <input
               type="email"
               name="email"
-              placeholder="Your Email"
+              placeholder="Votre email"
               value={formData.email}
               onChange={handleChange}
               className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded"
@@ -154,12 +155,12 @@ const SignUpForm = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-30px gap-y-25px mb-25px">
           <div>
             <label className="text-contentColor dark:text-contentColor-dark mb-10px block">
-              Password
+              <TranslatedText>Mot de passe</TranslatedText>
             </label>
             <input
               type="password"
               name="password"
-              placeholder="Password"
+              placeholder="Mot de passe"
               value={formData.password}
               onChange={handleChange}
               className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded"
@@ -167,12 +168,12 @@ const SignUpForm = () => {
           </div>
           <div>
             <label className="text-contentColor dark:text-contentColor-dark mb-10px block">
-              Re-Enter Password
+              <TranslatedText>Confirmer le mot de passe</TranslatedText>
             </label>
             <input
               type="password"
               name="confirmPassword"
-              placeholder="Re-Enter Password"
+              placeholder="Confirmer le mot de passe"
               value={formData.confirmPassword}
               onChange={handleChange}
               className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded"
@@ -182,7 +183,7 @@ const SignUpForm = () => {
 
         <div className="grid mb-6">
           <label className="text-contentColor dark:text-contentColor-dark mb-2 block text-sm font-medium">
-            I want to join as *
+            <TranslatedText>Je veux m'inscrire en tant que *</TranslatedText>
           </label>
           <select
             name="role"
@@ -191,19 +192,19 @@ const SignUpForm = () => {
             className="w-full px-4 py-3 bg-transparent text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none"
           >
             <option value="student" className="bg-transparent dark:bg-gray-800">
-              Student
+              <TranslatedText>Étudiant</TranslatedText>
             </option>
             <option
               value="instructor"
               className="bg-transparent dark:bg-gray-800"
             >
-              Instructor
+              <TranslatedText>Instructeur</TranslatedText>
             </option>
           </select>
         </div>
         <div className="grid mb-6">
           <label className="text-contentColor dark:text-contentColor-dark mb-2 block text-sm font-medium">
-            Profile Image
+            <TranslatedText>Image de profil</TranslatedText>
           </label>
           <input
             type="file"
@@ -223,7 +224,7 @@ const SignUpForm = () => {
             className="w-18px h-18px mr-2 block box-content"
             required
           />
-          <label htmlFor="accept-pp">Accept the Terms and Privacy Policy</label>
+          <label htmlFor="accept-pp"><TranslatedText>Accepter les conditions d'utilisation et la politique de confidentialité</TranslatedText></label>
         </div>
 
         <div className="mt-25px text-center">
@@ -231,7 +232,7 @@ const SignUpForm = () => {
             type="submit"
             className="text-size-15 text-whiteColor bg-[#2C3340] dark:bg-primaryColor px-25px py-10px w-full border border-primaryColor hover:text-primaryColor hover:bg-whiteColor inline-block rounded group dark:hover:text-whiteColor dark:hover:bg-whiteColor-dark"
           >
-            Sign Up
+            <TranslatedText>S'inscrire</TranslatedText>
           </button>
         </div>
       </form>

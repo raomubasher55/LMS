@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import TranslatedText from '@/components/shared/TranslatedText';
 
 const BlogCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -64,7 +65,7 @@ const BlogCategories = () => {
       data-aos="fade-up"
     >
       <h4 className="text-size-22 text-blackColor dark:text-blackColor-dark font-bold pl-2 before:w-0.5 relative before:h-[21px] before:bg-primaryColor before:absolute before:bottom-[5px] before:left-0 leading-30px mb-25px">
-        Categories
+        <TranslatedText>Catégories</TranslatedText>
         {!loading && categories.length > 0 && (
           <span className="text-sm font-normal ml-2">({categories.length})</span>
         )}
@@ -84,12 +85,12 @@ const BlogCategories = () => {
         </div>
       ) : error ? (
         <div className="text-center py-4">
-          <p className="text-red-500 text-sm mb-3">Failed to load categories</p>
+          <p className="text-red-500 text-sm mb-3"><TranslatedText>Échec du chargement des catégories</TranslatedText></p>
           <button 
             onClick={() => window.location.reload()} 
             className="px-4 py-2 bg-primaryColor text-white rounded text-sm hover:bg-primaryColor/80 transition-colors"
           >
-            Retry
+            <TranslatedText>Réessayer</TranslatedText>
           </button>
         </div>
       ) : categories.length > 0 ? (
@@ -117,8 +118,8 @@ const BlogCategories = () => {
         </ul>
       ) : (
         <div className="text-center py-8">
-          <p className="text-gray-500 text-sm">No categories found</p>
-          <p className="text-xs text-gray-400 mt-2">Categories will appear when blogs are published</p>
+          <p className="text-gray-500 text-sm"><TranslatedText>Aucune catégorie trouvée</TranslatedText></p>
+          <p className="text-xs text-gray-400 mt-2"><TranslatedText>Les catégories apparaîtront quand les blogs seront publiés</TranslatedText></p>
         </div>
       )}
     </div>

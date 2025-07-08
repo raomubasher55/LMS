@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -80,15 +81,15 @@ const LoginForm = () => {
       {/* heading */}
       <div className="text-center">
         <h3 className="text-size-32 font-bold text-blackColor dark:text-blackColor-dark mb-2 leading-normal">
-          Login
+          <TranslatedText>Connexion</TranslatedText>
         </h3>
         <p className="text-contentColor dark:text-contentColor-dark mb-15px">
-          {" Don't"} have an account yet?
+          <TranslatedText>Vous n'avez pas encore de compte?</TranslatedText>
           <a
             href="/register"
             className="hover:text-primaryColor relative after:absolute after:left-0 after:bottom-0.5 after:w-0 after:h-0.5 after:bg-primaryColor after:transition-all after:duration-300 hover:after:w-full"
           >
-            Sign up for free
+            <TranslatedText>Inscrivez-vous gratuitement</TranslatedText>
           </a>
         </p>
       </div>
@@ -103,14 +104,14 @@ const LoginForm = () => {
       <form className="pt-25px" data-aos="fade-up" onSubmit={handleSubmit}>
         <div className="mb-25px">
           <label className="text-contentColor dark:text-contentColor-dark mb-10px block">
-            Username or email
+            <TranslatedText>Nom d'utilisateur ou email</TranslatedText>
           </label>
           <input
             type="text"
             name="emailOrUsername"
             value={formData.emailOrUsername}
             onChange={handleChange}
-            placeholder="Your username or email"
+            placeholder="Votre nom d'utilisateur ou email"
             className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded"
             required
           />
@@ -118,14 +119,14 @@ const LoginForm = () => {
 
         <div className="mb-25px">
           <label className="text-contentColor dark:text-contentColor-dark mb-10px block">
-            Password
+            <TranslatedText>Mot de passe</TranslatedText>
           </label>
           <input
             type="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder="Password"
+            placeholder="Mot de passe"
             className="w-full h-52px leading-52px pl-5 bg-transparent text-sm focus:outline-none text-contentColor dark:text-contentColor-dark border border-borderColor dark:border-borderColor-dark placeholder:text-placeholder placeholder:opacity-80 font-medium rounded"
             required
           />
@@ -141,14 +142,14 @@ const LoginForm = () => {
               onChange={handleChange}
               className="w-18px h-18px mr-2 block box-content"
             />
-            <label htmlFor="remember"> Remember me</label>
+            <label htmlFor="remember"> <TranslatedText>Se souvenir de moi</TranslatedText></label>
           </div>
           <div>
             <a
               href="/forgot-password"
               className="hover:text-primaryColor relative after:absolute after:left-0 after:bottom-0.5 after:w-0 after:h-0.5 after:bg-primaryColor after:transition-all after:duration-300 hover:after:w-full"
             >
-              Forgot your password?
+              <TranslatedText>Mot de passe oublié?</TranslatedText>
             </a>
           </div>
         </div>
@@ -158,13 +159,13 @@ const LoginForm = () => {
             disabled={loading}
             className={`text-size-15 text-whiteColor bg-[#2C3340] dark:bg-primaryColor px-25px py-10px w-full border border-primaryColor hover:text-primaryColor hover:bg-whiteColor inline-block rounded group dark:hover:text-whiteColor dark:hover:bg-whiteColor-dark ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            {loading ? 'Logging in...' : 'Log in'}
+            {loading ? <TranslatedText>Connexion en cours...</TranslatedText> : <TranslatedText>Se connecter</TranslatedText>}
           </button>
         </div>
         {/* other login */}
         <div>
           <p className="text-contentColor dark:text-contentColor-dark text-center relative mb-15px before:w-2/5 before:h-1px before:bg-borderColor4 dark:before:bg-borderColor2-dark before:absolute before:left-0 before:top-4 after:w-2/5 after:h-1px after:bg-borderColor4 dark:after:bg-borderColor2-dark after:absolute after:right-0 after:top-4">
-            or Log-in with
+            <TranslatedText>ou se connecter avec</TranslatedText>
           </p>
         </div>
         <div className="text-center flex gap-x-1 md:gap-x-15px lg:gap-x-25px gap-y-5 items-center justify-center flex-wrap">

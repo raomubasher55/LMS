@@ -5,6 +5,7 @@ import countTotalPrice from "@/libs/countTotalPrice";
 import CartProduct from "@/components/shared/cart/CartProduct";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const CartPrimary = () => {
   const { cartProductsCheck: currentProducts, deleteCartProducts  } = useCartContext();
@@ -42,22 +43,22 @@ const CartPrimary = () => {
             <thead>
               <tr className="md:text-sm text-blackColor dark:text-blackColor-dark uppercase font-medium border-b border-borderColor dark:border-borderColor-dark">
                 <th className="pt-13px pb-9px md:py-22px px-5 md:px-25px leading-1.8 max-w-25 whitespace-nowrap">
-                  Image
+                  <TranslatedText>Image</TranslatedText>
                 </th>
                 <th className="pt-13px pb-9px md:py-22px px-5 md:px-25px leading-1.8 max-w-25 whitespace-nowrap">
-                  Product
+                  <TranslatedText>Produit</TranslatedText>
                 </th>
                 <th className="pt-13px pb-9px md:py-22px px-5 md:px-25px leading-1.8 max-w-25 whitespace-nowrap">
-                  Price
+                  <TranslatedText>Prix</TranslatedText>
                 </th>
                 <th className="pt-13px pb-9px md:py-22px px-5 md:px-25px leading-1.8 max-w-25 whitespace-nowrap">
-                  Quantity
+                  <TranslatedText>Quantité</TranslatedText>
                 </th>
                 <th className="pt-13px pb-9px md:py-22px px-5 md:px-25px leading-1.8 max-w-25 whitespace-nowrap">
-                  Total
+                  <TranslatedText>Total</TranslatedText>
                 </th>
                 <th className="pt-13px pb-9px md:py-22px px-5 md:px-25px leading-1.8 max-w-25 whitespace-nowrap">
-                  Remove
+                  <TranslatedText>Supprimer</TranslatedText>
                 </th>
               </tr>
             </thead>
@@ -66,14 +67,14 @@ const CartPrimary = () => {
               {loading ? (
                 <tr>
                   <td colSpan="6" className="text-center py-20">
-                    <p>Loading cart...</p>
+                    <p><TranslatedText>Chargement du panier...</TranslatedText></p>
                   </td>
                 </tr>
               ) : !isCartProduct ? (
                 <tr className="relative">
                   <td className="p-5 md:p-10">
                     <p className="absolute left-0 top-0 w-full h-full flex items-center justify-center md:text-xl font-bold capitalize opacity-70 ">
-                      empty
+                      <TranslatedText>vide</TranslatedText>
                     </p>
                   </td>
                 </tr>
@@ -92,7 +93,7 @@ const CartPrimary = () => {
               href={"/ecommerce/checkout"}
               className="text-size-13 text-whiteColor dark:text-whiteColor-dark dark:hover:text-whiteColor leading-1 px-5 py-18px md:px-10 bg-blackColor dark:bg-blackColor-dark hover:bg-primaryColor dark:hover:bg-primaryColor"
             >
-              CONTINUE SHOPPING
+              <TranslatedText>CONTINUER LES ACHATS</TranslatedText>
             </Link>
           </div>
           {isCartProduct && (
@@ -101,13 +102,13 @@ const CartPrimary = () => {
                 onClick={handleUpdateCart}
                 className="text-size-13 text-whiteColor dark:text-whiteColor-dark dark:hover:text-whiteColor leading-1 px-5 py-18px md:px-10 bg-blackColor dark:bg-blackColor-dark hover:bg-primaryColor dark:hover:bg-primaryColor"
               >
-                UPDATE CART
+                <TranslatedText>METTRE À JOUR LE PANIER</TranslatedText>
               </button>
               <button
                 onClick={handleClearCart}
                 className="text-size-13 text-whiteColor dark:text-whiteColor-dark dark:hover:text-whiteColor leading-1 px-5 py-18px md:px-10 bg-blackColor dark:bg-blackColor-dark hover:bg-primaryColor dark:hover:bg-primaryColor"
               >
-                CLEAR CART
+                <TranslatedText>VIDER LE PANIER</TranslatedText>
               </button>
             </div>
           )}

@@ -5,6 +5,7 @@ import DropdownPages from "./DropdownPages";
 import DropdownCourses from "./DropdownCourses";
 import DropdownWrapper from "@/components/shared/wrappers/DropdownWrapper";
 import DropdownDashboard from "./DropdownDashboard";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const NavItems = () => {
   const [userExists, setUserExists] = useState(false);
@@ -21,33 +22,33 @@ const NavItems = () => {
   const navItems = [
     {
       id: 1,
-      name: "Home",
+      name: <TranslatedText>Accueil</TranslatedText>,
       path: "/",
     },
     {
       id: 2,
-      name: "About",
+      name: <TranslatedText>À propos</TranslatedText>,
       path: "/about",
       dropdown: null,
       isRelative: false,
     },
     {
       id: 3,
-      name: "Blog",
+      name: <TranslatedText>Blog</TranslatedText>,
       path: "/blogs",
       dropdown: null,
       isRelative: false,
     },
     {
       id: 4,
-      name: "Pages",
+      name: <TranslatedText>Pages</TranslatedText>,
       path: "/about",
       dropdown: <DropdownPages />,
       isRelative: false,
     },
     {
       id: 5,
-      name: "Courses",
+      name: <TranslatedText>Cours</TranslatedText>,
       path: "/courses",
       dropdown: <DropdownCourses />,
       isRelative: false,
@@ -56,7 +57,7 @@ const NavItems = () => {
       ? [
           {
             id: 6,
-            name: "Dashboard",
+            name: <TranslatedText>Tableau de bord</TranslatedText>,
             path: "#",
             dropdown: <DropdownDashboard />,
             isRelative: true,

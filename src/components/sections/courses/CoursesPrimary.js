@@ -11,12 +11,13 @@ import Image from "next/image";
 import Link from "next/link";
 import NoData from "@/components/shared/others/NoData";
 import axios from "axios";
+import TranslatedText from "@/components/shared/TranslatedText";
 const sortInputs = [
-  "Sort by New",
-  "Title Ascending",
-  "Title Descending",
-  "Price Ascending",
-  "Price Descending",
+  "Trier par nouveau",
+  "Titre croissant",
+  "Titre décroissant",
+  "Prix croissant",
+  "Prix décroissant",
 ];
 
 
@@ -53,11 +54,11 @@ console.log(coursesBeforeFilter)
         setFilterInputs([
           categoriesFilter,
           {
-            name: "Tag",
+            name: "Étiquette",
             inputs: ["Mechanic", "English", "Computer Science", "Data & Tech", "Ux Design"]
           },
           {
-            name: "Skill Level",
+            name: "Niveau de compétence",
             inputs: ["All", "Fullstack", "English Learn", "Intermediate", "Wordpress"]
           }
         ]);
@@ -256,7 +257,7 @@ console.log(coursesBeforeFilter)
       >
                 {category && (
           <h1 className="text-2xl font-bold mb-6">
-            {decodeURIComponent(category)} Courses
+            <TranslatedText>Cours {decodeURIComponent(category)}</TranslatedText>
           </h1>
         )}
 
@@ -268,9 +269,7 @@ console.log(coursesBeforeFilter)
           <div>
             {currentCourses ? (
               <p className="text-blackColor dark:text-blackColor-dark">
-                Showing {skip ? skip : skip + 1} -{" "}
-                {skip + limit >= totalCourses ? totalCourses : skip + limit} of{" "}
-                {totalCourses} Results
+                <TranslatedText>Affichage de {skip ? skip : skip + 1} - {skip + limit >= totalCourses ? totalCourses : skip + limit} sur {totalCourses} résultats</TranslatedText>
               </p>
             ) : (
               ""
@@ -320,7 +319,7 @@ console.log(coursesBeforeFilter)
                   data-aos="fade-up"
                 >
                   <h4 className="text-size-22 text-blackColor dark:text-blackColor-dark font-bold leading-30px mb-25px">
-                    Search here
+                    <TranslatedText>Rechercher ici</TranslatedText>
                   </h4>
                   <form
                     onSubmit={(e) => {
@@ -340,7 +339,7 @@ console.log(coursesBeforeFilter)
                       onKeyUp={startSearch}
                       type="text"
                       value={searchString}
-                      placeholder="Search Produce"
+                      placeholder="Rechercher un produit"
                       className="placeholder:text-placeholder   dark:placeholder:text-[rgb(183, 183, 183)] bg-transparent focus:outline-none placeholder:opacity-80 w-full placeholder:font-medium  "
                     />
                     <button type="submit">

@@ -25,6 +25,7 @@ const CartContextProvider = ({ children }) => {
       const token = getToken();
       if (!token) {
         console.log("No token found — skipping cart fetch");
+        setCartProducts([]);
         return;
       }
   
@@ -37,6 +38,7 @@ const CartContextProvider = ({ children }) => {
         setCartProducts(data.wishlist || []);
       } catch (error) {
         console.error("Error fetching cart data:", error);
+        setCartProducts([]);
       }
     };
   
@@ -48,7 +50,9 @@ const CartContextProvider = ({ children }) => {
     try {
       const { id: courseId, quantity: currentQuantity } = newCourse;
    
-      const existingProduct = cartProductsCheck.find(product => product.course._id === courseId);
+      const existingProduct = cartProductsCheck.find(product => 
+        product.course && (product.course.id === courseId || product.course._id === courseId)
+      );
 
       let updatedCart;
 
@@ -60,13 +64,15 @@ const CartContextProvider = ({ children }) => {
           : existingProduct.quantity + currentQuantity;
 
         updatedCart = cartProductsCheck.map(product =>
-          product.course.id === courseId
+          product.course && (product.course.id === courseId || product.course._id === courseId)
             ? { ...product, quantity: Math.max(updatedQuantity, 1) }
             : product
         );
 
         await axiosInstance.put(`/api/wishlist/${courseId}`, {
-          quantity: updatedCart.find(product => product.course.id === courseId).quantity,
+          quantity: updatedCart.find(product => 
+            product.course && (product.course.id === courseId || product.course._id === courseId)
+          ).quantity,
         });
 
         createAlert("success", "Success! Quantity updated.");
@@ -92,7 +98,9 @@ const CartContextProvider = ({ children }) => {
     try {
       await axiosInstance.delete(`/api/wishlist/${idToRemove}`);
 
-      const updatedCart = cartProductsCheck.filter(product => product.id !== idToRemove);
+      const updatedCart = cartProductsCheck.filter(product => 
+        product.course && (product.course.id !== idToRemove && product.course._id !== idToRemove)
+      );
       setCartProducts(updatedCart);
       createAlert("success", "Success! Product removed from cart.");
     } catch (error) {

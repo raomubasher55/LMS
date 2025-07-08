@@ -1,4 +1,5 @@
 import React from "react";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const ContactPrimary = () => {
   return (
@@ -43,7 +44,7 @@ const ContactPrimary = () => {
             </div>
             <div className="">
               <h3 className="text-2xl font-semibold text-blackColor dark:text-blackColor-dark leading-38px">
-                Mail address
+                <TranslatedText>Adresse e-mail</TranslatedText>
               </h3>
               <p className="text-size-13 lg:text-size-15 text-contentColor dark:text-contentColor-dark leaing-5">
                 techbootmail@gmail.com
@@ -79,7 +80,7 @@ const ContactPrimary = () => {
             </div>
             <div className="">
               <h3 className="text-2xl font-semibold text-blackColor dark:text-blackColor-dark leading-38px">
-                Office address
+                <TranslatedText>Adresse du bureau</TranslatedText>
               </h3>
               <p className="text-size-13 lg:text-size-15 text-contentColor dark:text-contentColor-dark leaing-5">
                 Digital Agency Network 2024
@@ -115,7 +116,7 @@ const ContactPrimary = () => {
             </div>
             <div className="">
               <h3 className="text-2xl font-semibold text-blackColor dark:text-blackColor-dark leading-38px">
-                Phone Number
+                <TranslatedText>Numéro de téléphone</TranslatedText>
               </h3>
               <p className="text-size-13 lg:text-size-15 text-contentColor dark:text-contentColor-dark leaing-5">
                 +880 123 456 789 , 99874

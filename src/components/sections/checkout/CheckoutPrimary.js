@@ -5,6 +5,7 @@ import useSweetAlert from "@/hooks/useSweetAlert";
 import countTotalPrice from "@/libs/countTotalPrice";
 import axios from "axios";
 import { useState } from "react";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const CheckoutPrimary = () => {
   const { cartProductsCheck: products } = useCartContext();
@@ -31,20 +32,48 @@ const CheckoutPrimary = () => {
         return;
       }
 
+      // Get the first course from cart
+      const firstProduct = products[0];
+      if (!firstProduct || !firstProduct.course) {
+        createAlert('error', 'No course selected for purchase');
+        return;
+      }
+
+      const courseId = firstProduct.course._id || firstProduct.course.id;
+      
+      if (!courseId) {
+        createAlert('error', 'Invalid course ID');
+        return;
+      }
+
       // Create payment session
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payments/create-session`,
-        { courseId: course._id },
+        { courseId: courseId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
-        // Redirect to Stripe checkout
-        window.location.href = response.data.url;
+        // Create form and submit to Maxicash gateway
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = response.data.gatewayUrl;
+        
+        // Add all payment data as hidden inputs
+        Object.keys(response.data.paymentData).forEach(key => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = response.data.paymentData[key];
+          form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
       }
     } catch (error) {
       console.error('Payment error:', error);
-      createAlert('error', error.response?.data?.message || 'Please provide the API');
+      createAlert('error', error.response?.data?.message || 'Failed to process payment');
     } finally {
       setLoading(false);
     }
@@ -163,22 +192,22 @@ const CheckoutPrimary = () => {
           <div className="p-10px lg:p-35px text-blackColor dark:text-blackColor-dark leading-1.8">
             {/* heading */}
             <h4 className="text-2xl text-blackColor dark:text-blackColor-dark font-bold mb-5">
-              <span className="leading-1.2">Your Order</span>
+              <span className="leading-1.2"><TranslatedText>Votre commande</TranslatedText></span>
             </h4>
 
             <div className="overflow-auto">
               <table className="table-fixed w-full border-t border-borderColor2 dark:border-borderColor2-dark font-medium">
                 <thead>
                   <tr className="border-b border-borderColor2 dark:border-borderColor2-dark">
-                    <td className="p-10px md:p-15px">Product</td>
-                    <td className="p-10px md:p-15px">Total</td>
+                    <td className="p-10px md:p-15px"><TranslatedText>Produit</TranslatedText></td>
+                    <td className="p-10px md:p-15px"><TranslatedText>Total</TranslatedText></td>
                   </tr>
                 </thead>
                 <tbody>
                   {!isProducts ? (
                     <tr className="border-b border-borderColor2 dark:border-borderColor2-dark">
                       <td className="p-10px md:p-15px">
-                        Product Title × <span>0</span>
+                        <TranslatedText>Titre du produit</TranslatedText> × <span>0</span>
                       </td>
                       <td className="p-10px md:p-15px">$0.00</td>
                     </tr>
@@ -199,7 +228,7 @@ const CheckoutPrimary = () => {
                     ))
                   )}
                   <tr className="border-b border-borderColor2 dark:border-borderColor2-dark">
-                    <td className="p-10px md:p-15px">Subtotal</td>
+                    <td className="p-10px md:p-15px"><TranslatedText>Sous-total</TranslatedText></td>
                     <td className="p-10px md:p-15px">
                       ${subtotal ? subtotal.toFixed(2) : "0.00"}
                     </td>
@@ -242,7 +271,7 @@ const CheckoutPrimary = () => {
                     </td>
                   </tr> */}
                   <tr>
-                    <td className="p-10px md:p-15px">Total</td>
+                    <td className="p-10px md:p-15px"><TranslatedText>Total</TranslatedText></td>
                     <td className="p-10px md:p-15px">
                       ${subtotal ? subtotal.toFixed(2) : "0.00"}
                     </td>
@@ -307,7 +336,7 @@ const CheckoutPrimary = () => {
                   disabled={subtotal ? false : true}
                   className="text-size-15 text-whiteColor bg-primaryColor px-25px py-10px border border-primaryColor hover:text-primaryColor hover:bg-whiteColor inline-block rounded group dark:hover:text-whiteColor dark:hover:bg-whiteColor-dark disabled:cursor-not-allowed disabled:opacity-80 disabled:bg-primaryColor disabled:text-whiteColor"
                 >
-                  Place order
+                  <TranslatedText>Passer la commande</TranslatedText>
                 </button>
               </div>
             </div>

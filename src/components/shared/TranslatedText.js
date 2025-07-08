@@ -44,9 +44,12 @@ const TranslatedText = ({
   // Debounced translation function
   const debouncedTranslate = useCallback((textToTranslate, targetLanguage) => {
     // Clear existing timer
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
+    setDebounceTimer(prevTimer => {
+      if (prevTimer) {
+        clearTimeout(prevTimer);
+      }
+      return null;
+    });
 
     // Set new timer
     const timer = setTimeout(async () => {
@@ -97,7 +100,7 @@ const TranslatedText = ({
     }, debounceMs);
 
     setDebounceTimer(timer);
-  }, [debounceTimer, debounceMs, languages.FRENCH, getCachedTranslation, setCachedTranslation, setIsTranslating]);
+  }, [debounceMs, languages.FRENCH, getCachedTranslation, setCachedTranslation, setIsTranslating]);
 
   // Effect to handle translation when dependencies change
   useEffect(() => {
@@ -106,23 +109,19 @@ const TranslatedText = ({
     } else {
       setTranslatedText('');
     }
-
-    // Cleanup timer on unmount or dependency change
-    return () => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-      }
-    };
   }, [cleanedText, currentLanguage, debouncedTranslate]);
 
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-      }
+      setDebounceTimer(prevTimer => {
+        if (prevTimer) {
+          clearTimeout(prevTimer);
+        }
+        return null;
+      });
     };
-  }, [debounceTimer]);
+  }, []);
 
   // If loading and fallback provided, show fallback
   if (isLoading && fallback) {

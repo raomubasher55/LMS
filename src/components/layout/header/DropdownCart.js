@@ -47,47 +47,51 @@ const DropdownCart = ({ isHeaderTop }) => {
               </div>
             ) : (
               cartProductsCheck.map(
-                (cartItem, idx) => (
-                  <li
-                    key={idx}
-                    className="relative flex gap-x-15px items-center"
-                  >
-                    <Link
-                      href={`courses/${cartItem.course.id}`}
+                (cartItem, idx) => {
+                  if (!cartItem || !cartItem.course) return null;
+                  
+                  return (
+                    <li
+                      key={idx}
+                      className="relative flex gap-x-15px items-center"
                     >
-                      <Image
-                        prioriy="false"
-                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${cartItem.course.bannerImage}`}
-                        alt="photo"
-                        className="w-card-img py-[3px]"
-                        width={100}
-                        height={100}
-                      />
-                    </Link>
-                    <div>
                       <Link
-                        href={`/courses/${cartItem.course.id}`}
-                        className="text-sm text-darkblack hover:text-secondaryColor leading-5 block pb-2 capitalize dark:text-darkblack-dark dark:hover:text-secondaryColor"
+                        href={`courses/${cartItem.course.id || cartItem.course._id}`}
                       >
-                        {cartItem.course.title?.length > 16 ? cartItem.course.title?.slice(0, 16) : cartItem.course.title}
+                        <Image
+                          prioriy="false"
+                          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${cartItem.course.bannerImage}`}
+                          alt="photo"
+                          className="w-card-img py-[3px]"
+                          width={100}
+                          height={100}
+                        />
                       </Link>
-                      <p className="text-sm text-darkblack leading-5 block pb-5px dark:text-darkblack-dark">
-                        1 x{" "}
-                        <span className="text-secondaryColor">
-                          ${cartItem.price.toFixed(2)}
-                        </span>
-                      </p>
-                    </div>
+                      <div>
+                        <Link
+                          href={`/courses/${cartItem.course.id || cartItem.course._id}`}
+                          className="text-sm text-darkblack hover:text-secondaryColor leading-5 block pb-2 capitalize dark:text-darkblack-dark dark:hover:text-secondaryColor"
+                        >
+                          {cartItem.course.title?.length > 16 ? cartItem.course.title?.slice(0, 16) : cartItem.course.title}
+                        </Link>
+                        <p className="text-sm text-darkblack leading-5 block pb-5px dark:text-darkblack-dark">
+                          1 x{" "}
+                          <span className="text-secondaryColor">
+                            ${cartItem.price?.toFixed(2) || '0.00'}
+                          </span>
+                        </p>
+                      </div>
 
-                    <button
-                      onClick={() => deleteProductFromCart(cartItem.course.id, cartItem.course.title)}
-                      className="absolute block top-0 right-0 text-base text-contentColor leading-1 hover:text-secondaryColor dark:text-contentColor-dark dark:hover:text-secondaryColor"
-                    >
-                      <i className="icofont-close-line"></i>
-                    </button>
-                  </li>
-                )
-              )
+                      <button
+                        onClick={() => deleteProductFromCart(cartItem.course.id || cartItem.course._id, cartItem.course.title)}
+                        className="absolute block top-0 right-0 text-base text-contentColor leading-1 hover:text-secondaryColor dark:text-contentColor-dark dark:hover:text-secondaryColor"
+                      >
+                        <i className="icofont-close-line"></i>
+                      </button>
+                    </li>
+                  );
+                }
+              ).filter(Boolean)
             )}
           </ul>
 
