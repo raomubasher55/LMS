@@ -14,7 +14,7 @@ export const LANGUAGE_CODES = {
 
 // Translation errors for user feedback
 export const TRANSLATION_ERRORS = {
-  NO_API_KEY: 'Translation service not configured',
+  NO_API_KEY: 'Translation service not configured',  
   NETWORK_ERROR: 'Unable to connect to translation service',
   QUOTA_EXCEEDED: 'Translation quota exceeded',
   INVALID_LANGUAGE: 'Invalid language code',
