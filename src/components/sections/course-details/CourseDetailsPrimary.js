@@ -21,7 +21,9 @@ const CourseDetailsPrimary = ({ id: courseId, type }) => {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/courses/${courseId}`
         );
-        setCourse(response.data.course);
+        // Handle both wrapped and direct course data
+        const courseData = response.data.course || response.data;
+        setCourse(courseData);
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch course:", error);
