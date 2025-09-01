@@ -31,12 +31,15 @@ const InstructorStats = () => {
 
       console.log("Fetching instructor courses...");
       // Fetch instructor courses
-      const coursesResponse = await fetch(`http://localhost:5000/api/instructor-courses`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+const coursesResponse = await fetch(
+  `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/instructor-courses`,
+  {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  }
+);
 
       let totalStudents = 0;
       let activeCourses = 0;
@@ -53,7 +56,7 @@ const InstructorStats = () => {
       }
 
       // Fetch pending assignment submissions
-      const assignmentsResponse = await fetch(`http://localhost:5000/api/courses/instructor/assignments`, {
+      const assignmentsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/courses/instructor/assignments`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -70,7 +73,7 @@ const InstructorStats = () => {
       }
 
       // Fetch instructor reviews
-      const reviewsResponse = await fetch(`http://localhost:5000/api/instructor/reviews`, {
+      const reviewsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/instructor/reviews`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

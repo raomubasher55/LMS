@@ -44,44 +44,44 @@ const CounterAdmin = () => {
 
   const counts = stats ? [
     {
-      name: stats.stats[0].title, // "Total Courses"
+      name: "Total des cours", 
       image: counter4,
-      data: stats.stats[0].value, // stats.totalCourses
+      data: stats.stats[0].value, 
       symbol: "+",
     },
     {
-      name: stats.stats[1].title, // "Active Courses"
+      name: "Cours actifs", // "Active Courses"
       image: counter2,
       data: stats.stats[1].value, // stats.activeCourses
       symbol: stats.stats[1].value > 0 ? "+" : "",
     },
     {
-      name: stats.stats[2].title, // "Pending Courses"
+      name: "Cours en attente", // "Pending Courses"
       image: counter3,
       data: stats.stats[2].value, // stats.pendingCourses
       symbol: "",
     },
     {
-      name: stats.stats[3].title, // "Total Students"
+      name: "Total des étudiants", // "Total Students"
       image: counter3,
       data: stats.stats[3].value, // stats.totalStudents
       symbol: stats.stats[3].value > 0 ? "+" : "",
     },
     {
-      name: stats.stats[4].title, // "Total Instructors"
+      name: "Total des instructeurs", // "Total Instructors"
       image: counter1,
       data: stats.stats[4].value, // stats.totalInstructors
       symbol: stats.stats[4].value > 0 ? "+" : "",
     },
     {
-      name: stats.stats[6].title, // "Platform Revenue"
+      name: "Revenus de la plateforme", // "Platform Revenue"
       image: counter4,
       data: formatMoney(stats.stats[6].value), // stats.totalRevenue
       symbol: "",
       isMoney: true
     },
     {
-      name: stats.stats[5].title, // "Total Purchases"
+      name: "Total des achats", // "Total Purchases"
       image: counter1,
       data: stats.stats[5].value, // stats.totalPurchases
       symbol: stats.stats[5].value > 0 ? "+" : "",
