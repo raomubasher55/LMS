@@ -12,6 +12,7 @@ const CourseEnrollWithPayment = ({ course }) => {
   const [loading, setLoading] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [paymentData, setPaymentData] = useState(null);
+  const [isTestMode, setIsTestMode] = useState(false);
   const createAlert = useSweetAlert();
   const router = useRouter();
 
@@ -98,6 +99,7 @@ finally {
     }
   };
 
+
   const handlePremiumCoursePayment = async () => {
     try {
       setLoading(true);
@@ -108,51 +110,66 @@ finally {
         return;
       }
 
-      // Create payment session with Maxicash
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payments/create-session`,
-        { courseId: course._id },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      // Check if test mode is enabled
+      if (isTestMode) {
+        // Use dummy payment endpoint
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payments/create-session`,
+          { 
+            courseId: course._id,
+            dummyPayment: true // Send dummy payment flag
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-      if (response.data.success) {
-        // Store payment data and show form
-        console.log('Payment data:', response.data);
-        setPaymentData(response.data);
-        
-        // Automatically submit the form to redirect to Maxicash
-        // setTimeout(() => {
-        //   document.getElementById('maxicash-payment-form').submit();
-        // }, 500);
+        if (response.data.success) {
+          createAlert('success', 'Dummy payment successful! Course purchased.');
+          setHasAccess(true);
+          
+          // Redirect after successful dummy purchase
+          setTimeout(() => {
+            router.push('/dashboards/student-dashboard');
+          }, 1500);
+        }
+      } else {
+        // Original payment flow for real payments
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payments/create-session`,
+          { courseId: course._id },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.data.success) {
+          // Store payment data and show form
+          console.log('Payment data:', response.data);
+          setPaymentData(response.data);
+        }
       }
-} catch (error) {
-  console.error('Payment error:', error);
-  const msg = error?.response?.data?.message || error.message || 'Failed to process payment';
-  createAlert('error', String(msg));
-}
-finally {
+    } catch (error) {
+      console.error('Payment error:', error);
+      const msg = error?.response?.data?.message || error.message || 'Failed to process payment';
+      createAlert('error', String(msg));
+    } finally {
       setLoading(false);
     }
   };
 
   
-useEffect(() => {
-  if (paymentData && typeof window !== "undefined") {
-    const form = document.getElementById("maxicash-payment-form");
-    if (form) {
-      const data = new FormData(form);
-      console.log("Submitting form to Maxicash with:");
-      for (const [key, value] of data.entries()) {
-        console.log(`${key}: ${value}`);
+  useEffect(() => {
+    if (paymentData && typeof window !== "undefined") {
+      const form = document.getElementById("maxicash-payment-form");
+      if (form) {
+        const data = new FormData(form);
+        console.log("Submitting form to Maxicash with:");
+        for (const [key, value] of data.entries()) {
+          console.log(`${key}: ${value}`);
+        }
+        form.submit();
+      } else {
+        console.warn("Maxicash form not found.");
       }
-      form.submit();
-    } else {
-      console.warn("Maxicash form not found.");
     }
-  }
-}, [paymentData]);
-
-
+  }, [paymentData]);
 
   const handleStartLearning = () => {
     // Redirect to course learning page
@@ -164,6 +181,8 @@ useEffect(() => {
     const mins = Math.floor((totalSeconds % 3600) / 60);
     return `${hrs > 0 ? `${hrs}h ` : ""}${mins}m`;
   };
+
+    const isDevelopment = process.env.NODE_ENV === 'development';
 
   if (checkingAccess) {
     return (
@@ -311,6 +330,78 @@ useEffect(() => {
           <input type="hidden" name="notifyurl" value={paymentData.paymentData.notifyurl} />
         </form>
       )}
+
+            {isDevelopment && (
+        <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={isTestMode}
+              onChange={(e) => setIsTestMode(e.target.checked)}
+              className="mr-2"
+            />
+            <span className="text-sm font-medium">Test Mode (Dummy Payment)</span>
+          </label>
+          <p className="text-xs text-yellow-700 mt-1">
+            {isTestMode 
+              ? "Dummy payment mode enabled - Course will be purchased without real payment" 
+              : "Real payment mode enabled - Will redirect to payment gateway"}
+          </p>
+        </div>
+      )}
+
+            <div className="text-center">
+        {checkingAccess ? (
+          <div className="py-4">
+            <p className="text-gray-500">Checking access...</p>
+          </div>
+        ) : hasAccess ? (
+          <div>
+            <button
+              onClick={handleStartLearning}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors w-full"
+            >
+              <TranslatedText>Start Learning</TranslatedText>
+            </button>
+            <p className="text-sm text-green-600 mt-2">
+              <TranslatedText>You already have access to this course</TranslatedText>
+            </p>
+          </div>
+        ) : isFree ? (
+          <button
+            onClick={handleFreeCourseEnrollment}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors w-full disabled:opacity-50"
+          >
+            {loading ? (
+              <span><TranslatedText>Enrolling...</TranslatedText></span>
+            ) : (
+              <span><TranslatedText>Enroll for Free</TranslatedText></span>
+            )}
+          </button>
+        ) : (
+          <div>
+            <button
+              onClick={handlePremiumCoursePayment}
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-colors w-full disabled:opacity-50"
+            >
+              {loading ? (
+                <span><TranslatedText>Processing...</TranslatedText></span>
+              ) : (
+                <span>
+                  <TranslatedText>Buy Now</TranslatedText> - ${currentPrice}
+                </span>
+              )}
+            </button>
+            {isTestMode && (
+              <p className="text-xs text-gray-500 mt-2">
+                <TranslatedText>Test mode: No real payment required</TranslatedText>
+              </p>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Course Details */}
       <ul>

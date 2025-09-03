@@ -43,10 +43,6 @@ const CourseLearnMain = ({ courseId }) => {
       if (response.data) {
         // Handle both wrapped and direct course data
         const courseData = response.data.course || response.data;
-        console.log('Raw course data:', courseData);
-        console.log('Chapters:', courseData.chapters);
-        console.log('First chapter:', courseData.chapters?.[0]);
-        console.log('First chapter lessons:', courseData.chapters?.[0]?.lessons);
         
         // Transform the course data to match our component structure
         const transformedCourse = {
@@ -54,8 +50,6 @@ const CourseLearnMain = ({ courseId }) => {
           chapters: courseData.chapters?.map(chapter => ({
             ...chapter,
             videos: chapter.lessons?.map(lesson => {
-              console.log('Transforming lesson:', lesson);
-              console.log('Lesson video data:', lesson.video);
               
               return {
                 ...lesson.video,
@@ -71,7 +65,6 @@ const CourseLearnMain = ({ courseId }) => {
           })) || []
         };
         
-        console.log('Transformed course data:', transformedCourse);
         setCourse(transformedCourse);
         
         // Set first video as default
@@ -79,7 +72,6 @@ const CourseLearnMain = ({ courseId }) => {
           const firstChapter = transformedCourse.chapters[0];
           if (firstChapter.videos && firstChapter.videos.length > 0) {
             setCurrentVideo(firstChapter.videos[0]);
-            console.log('Set current video:', firstChapter.videos[0]);
           }
         }
       }

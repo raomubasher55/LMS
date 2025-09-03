@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@netlify/plugin-nextjs": "^5.11.1",
+    "@vimeo/player": "^2.29.3",
     "aos": "^3.0.0-beta.6",
     "axios": "^1.8.4",
     "chart.js": "^4.4.2",
