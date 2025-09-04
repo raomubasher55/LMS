@@ -76,7 +76,7 @@ const CourseProgress = ({ course, currentVideoId, progressData }) => {
       <div className="progress-stats grid grid-cols-3 gap-4">
         <div className="stat-item text-center">
           <div className="stat-number text-2xl font-bold text-blue-600">{stats.total}</div>
-          <div className="stat-label text-sm text-gray-600">Total Videos</div>
+          <div className="stat-label text-sm text-gray-600">Total Chapters</div>
         </div>
         <div className="stat-item text-center">
           <div className="stat-number text-2xl font-bold text-green-600">{stats.completed}</div>
