@@ -143,6 +143,11 @@ finally {
           // Store payment data and show form
           console.log('Payment data:', response.data);
           setPaymentData(response.data);
+          
+          // Automatically submit the form to redirect to Maxicash
+          setTimeout(() => {
+            document.getElementById('maxicash-payment-form').submit();
+          }, 500);
         }
       }
     } catch (error) {
