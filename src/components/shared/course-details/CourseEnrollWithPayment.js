@@ -69,7 +69,7 @@ const CourseEnrollWithPayment = ({ course }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
+
       if (!token) {
         createAlert('error', 'Please login to enroll in courses');
         return;
@@ -89,12 +89,12 @@ const CourseEnrollWithPayment = ({ course }) => {
           router.push('/dashboards/student-dashboard');
         }, 1500);
       }
-} catch (error) {
-  console.error('Free enrollment error:', error);
-  const msg = error?.response?.data?.message || error.message || 'Failed to enroll in course';
-  createAlert('error', String(msg));
-}
-finally {
+    } catch (error) {
+      console.error('Free enrollment error:', error);
+      const msg = error?.response?.data?.message || error.message || 'Failed to enroll in course';
+      createAlert('error', String(msg));
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -104,7 +104,7 @@ finally {
     try {
       setLoading(true);
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
+
       if (!token) {
         createAlert('error', 'Please login to purchase courses');
         return;
@@ -115,7 +115,7 @@ finally {
         // Use dummy payment endpoint
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payments/create-session`,
-          { 
+          {
             courseId: course._id,
             dummyPayment: true // Send dummy payment flag
           },
@@ -125,7 +125,7 @@ finally {
         if (response.data.success) {
           createAlert('success', 'Dummy payment successful! Course purchased.');
           setHasAccess(true);
-          
+
           // Redirect after successful dummy purchase
           setTimeout(() => {
             router.push('/dashboards/student-dashboard');
@@ -143,7 +143,7 @@ finally {
           // Store payment data and show form
           console.log('Payment data:', response.data);
           setPaymentData(response.data);
-          
+
           // Automatically submit the form to redirect to Maxicash
           setTimeout(() => {
             document.getElementById('maxicash-payment-form').submit();
@@ -159,7 +159,7 @@ finally {
     }
   };
 
-  
+
   useEffect(() => {
     if (paymentData && typeof window !== "undefined") {
       const form = document.getElementById("maxicash-payment-form");
@@ -187,7 +187,7 @@ finally {
     return `${hrs > 0 ? `${hrs}h ` : ""}${mins}m`;
   };
 
-    const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = process.env.NODE_ENV === 'development';
 
   if (checkingAccess) {
     return (
@@ -210,7 +210,7 @@ finally {
       <div className="overflow-hidden relative mb-5">
         {course?.bannerImage ? (
           <Image
-            src={course.bannerImage 
+            src={course.bannerImage
               ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${course.bannerImage}`
               : '/placeholder-course.jpg'}
             alt="course image"
@@ -306,7 +306,7 @@ finally {
         )}
 
         <span className="text-size-13 text-contentColor dark:text-contentColor-dark leading-1.8 block text-center">
-          <i className="icofont-ui-rotation mr-1"></i> 
+          <i className="icofont-ui-rotation mr-1"></i>
           {isFree ? "Free Forever Access" : "Secure Payment via MaxiCash"}
         </span>
       </div>
@@ -336,7 +336,7 @@ finally {
         </form>
       )}
 
-            {isDevelopment && (
+      {/* {isDevelopment && (
         <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded">
           <label className="flex items-center">
             <input
@@ -348,14 +348,14 @@ finally {
             <span className="text-sm font-medium">Test Mode (Dummy Payment)</span>
           </label>
           <p className="text-xs text-yellow-700 mt-1">
-            {isTestMode 
-              ? "Dummy payment mode enabled - Course will be purchased without real payment" 
+            {isTestMode
+              ? "Dummy payment mode enabled - Course will be purchased without real payment"
               : "Real payment mode enabled - Will redirect to payment gateway"}
           </p>
         </div>
-      )}
+      )} */}
 
-            <div className="text-center">
+      {/* <div className="text-center">
         {checkingAccess ? (
           <div className="py-4">
             <p className="text-gray-500">Checking access...</p>
@@ -406,7 +406,7 @@ finally {
             )}
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Course Details */}
       <ul>
@@ -418,7 +418,7 @@ finally {
             {(course?.instructor?.firstName || '') + " " + (course?.instructor?.lastName || '')}
           </p>
         </li>
-        
+
         <li className="flex items-center justify-between py-10px border-b border-borderColor dark:border-borderColor-dark">
           <p className="text-sm font-medium text-contentColor dark:text-contentColor-dark leading-1.8">
             <TranslatedText>Type de cours</TranslatedText>
