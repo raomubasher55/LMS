@@ -1,8 +1,9 @@
-"use client"
+"use client";
 import Image from "next/image";
 import React from "react";
 import logoImage from "@/assets/images/logo/tanga.jpeg";
 import useIsSecondary from "@/hooks/useIsSecondary";
+import TranslatedText from "@/components/shared/TranslatedText";
 
 const CopyRight = () => {
   const { isSecondary } = useIsSecondary();
@@ -16,7 +17,10 @@ const CopyRight = () => {
               <a href="#" className="hover:text-primaryColor">
                 Tanga Academie
               </a>
-              . All Rights Reserved. Developed by{" "}
+              .{" "}
+              <TranslatedText>
+                Tous droits réservés. Développé par
+              </TranslatedText>{" "}
               <a
                 href="www.linkedin.com/in/zahid-ghotia"
                 target="_blank"
@@ -24,8 +28,7 @@ const CopyRight = () => {
                 className="hover:text-primaryColor"
               >
                 Ghotia.Dev
-                              </a>
-              
+              </a>
             </p>
           </div>
 
@@ -36,7 +39,7 @@ const CopyRight = () => {
                   href="/about"
                   className="text-base text-darkgray hover:text-primaryColor pr-4 border-r border-darkgray"
                 >
-                  About Us
+                  <TranslatedText>À propos de nous</TranslatedText>
                 </a>
               </li>
               <li>
@@ -44,7 +47,7 @@ const CopyRight = () => {
                   href="/privacy-policy"
                   className="text-base text-darkgray hover:text-primaryColor pl-4"
                 >
-                  Privacy Policy
+                  <TranslatedText>Politique de confidentialité</TranslatedText>
                 </a>
               </li>
             </ul>
@@ -54,24 +57,27 @@ const CopyRight = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-30px pt-10 items-center">
           <div className="lg:col-start-1 lg:col-span-3">
             <a href="/">
-              <Image src={logoImage} alt="Tanga Academy Logo" placeholder="blur" />
+              <Image
+                src={logoImage}
+                alt="Tanga Academy Logo"
+                placeholder="blur"
+              />
             </a>
           </div>
 
           <div className="lg:col-start-4 lg:col-span-6 text-center lg:text-left">
             <p className="dark:text-whiteColor text-center">
-              © 2025 <span className="text-primaryColor">Tanga Academie</span>. All Rights Reserved. <br />
-              Developed by{" "}
+              © 2025 <span className="text-primaryColor">Tanga Academie</span>.{" "}
+              <TranslatedText>Tous droits réservés</TranslatedText>. <br />
+              <TranslatedText>Développé par</TranslatedText>{" "}
               <a
-  href="https://www.linkedin.com/in/zahid-ghotia"
-
+                href="https://www.linkedin.com/in/zahid-ghotia"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-primaryColor"
               >
                 Ghotia.Dev
-                              </a>
-              
+              </a>
             </p>
           </div>
 

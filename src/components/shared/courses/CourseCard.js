@@ -27,6 +27,7 @@ const CourseCard = ({ course, instructor, type, role }) => {
 
   // Calculate if course is free
   const isFree = offerType === "free";
+  
 
   const insName =
     instructor?.name ||

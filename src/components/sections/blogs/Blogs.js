@@ -163,7 +163,9 @@ const Blogs = () => {
                           />
                         </div>
                         <div className="text-sm md:text-lg text-darkdeep5 dark:text-darkdeep5-dark">
-                          By:
+                          <TranslatedText>
+                          Par:
+                          </TranslatedText>
                           <span className="text-blackColor dark:text-blackColor-dark">
                             {` ${blog.author?.firstName} ${blog.author?.lastName}`}
                           </span>

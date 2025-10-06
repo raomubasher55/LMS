@@ -265,6 +265,14 @@ const NewsletterDashboard = () => {
     fetchSubscribers(page, subscriberSearchTerm, statusFilter);
   };
 
+  const getFirstThreeWords = (text) => {
+    if (!text) return "";
+    return (
+      text.split(" ").slice(0, 3).join(" ") +
+      (text.split(" ").length > 3 ? "..." : "")
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-darkblack p-6">
       <div className="max-w-7xl mx-auto">
@@ -405,6 +413,12 @@ const NewsletterDashboard = () => {
                         <TranslatedText>Informations de contact</TranslatedText>
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <TranslatedText>Sujet</TranslatedText>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <TranslatedText>Téléphone</TranslatedText>
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         <TranslatedText>Message</TranslatedText>
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -415,12 +429,14 @@ const NewsletterDashboard = () => {
                       </th>
                     </tr>
                   </thead>
+
                   <tbody className="bg-white dark:bg-naveBlue divide-y divide-gray-200 dark:divide-gray-700">
                     {contacts.map((contact) => (
                       <tr
                         key={contact._id}
                         className="hover:bg-gray-50 dark:hover:bg-darkblack transition-colors"
                       >
+                        {/* Contact Info */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="p-2 bg-gray-100 dark:bg-gray-600 rounded-full">
@@ -436,17 +452,41 @@ const NewsletterDashboard = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900 dark:text-white max-w-xs">
-                            {truncateMessage(contact.message)}
+
+                        {/* Subject */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900 dark:text-white">
+                            {contact.service || (
+                              <TranslatedText>Non spécifié</TranslatedText>
+                            )}
                           </div>
                         </td>
+
+                        {/* Phone */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900 dark:text-white">
+                            {contact.phone || (
+                              <TranslatedText>Non fourni</TranslatedText>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Message */}
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-900 dark:text-white max-w-xs">
+                            {getFirstThreeWords(contact.message)}
+                          </div>
+                        </td>
+
+                        {/* Date */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center text-sm text-gray-900 dark:text-white">
                             <Calendar className="h-4 w-4 mr-2 text-gray-400" />
                             {formatDate(contact.createdAt)}
                           </div>
                         </td>
+
+                        {/* Actions */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
                             <button
@@ -490,69 +530,6 @@ const NewsletterDashboard = () => {
                         </TranslatedText>
                       )}
                     </p>
-                  </div>
-                )}
-
-                {/* Contact Pagination */}
-                {contactPagination && contactPagination.totalPages > 1 && (
-                  <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-700 dark:text-gray-300">
-                        <TranslatedText>Affichage</TranslatedText>{" "}
-                        {(contactCurrentPage - 1) * 20 + 1} to{" "}
-                        {Math.min(
-                          contactCurrentPage * 20,
-                          contactPagination.totalContacts
-                        )}{" "}
-                        of {contactPagination.totalContacts} messages
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() =>
-                            handleContactPageChange(contactCurrentPage - 1)
-                          }
-                          disabled={contactCurrentPage === 1}
-                          className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white"
-                        >
-                          <TranslatedText>Précédent</TranslatedText>
-                        </button>
-
-                        {[
-                          ...Array(Math.min(5, contactPagination.totalPages)),
-                        ].map((_, i) => {
-                          const pageNum =
-                            Math.max(1, contactCurrentPage - 2) + i;
-                          if (pageNum <= contactPagination.totalPages) {
-                            return (
-                              <button
-                                key={pageNum}
-                                onClick={() => handleContactPageChange(pageNum)}
-                                className={`px-3 py-1 border text-sm rounded ${
-                                  pageNum === contactCurrentPage
-                                    ? "bg-blue-600 text-white border-blue-600"
-                                    : "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white"
-                                }`}
-                              >
-                                {pageNum}
-                              </button>
-                            );
-                          }
-                          return null;
-                        })}
-
-                        <button
-                          onClick={() =>
-                            handleContactPageChange(contactCurrentPage + 1)
-                          }
-                          disabled={
-                            contactCurrentPage === contactPagination.totalPages
-                          }
-                          className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white"
-                        >
-                          <TranslatedText>Suivant</TranslatedText>
-                        </button>
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
@@ -810,47 +787,66 @@ const NewsletterDashboard = () => {
         )}
 
         {/* Contact Modal */}
-        {showContactModal && selectedContact && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white dark:bg-naveBlue rounded-lg shadow-lg w-full max-w-2xl p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  <TranslatedText>Message de contact</TranslatedText>
-                </h2>
-                <button
-                  onClick={closeContactModal}
-                  className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  <strong>
-                    <TranslatedText>Nom</TranslatedText>:
-                  </strong>{" "}
-                  {selectedContact.name}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  <strong>Email:</strong> {selectedContact.email}
-                </p>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-gray-900 dark:text-white">
-                  {selectedContact.message}
-                </p>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <button
-                  onClick={closeContactModal}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
+{showContactModal && selectedContact && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white dark:bg-naveBlue rounded-lg shadow-lg w-full max-w-2xl p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          <TranslatedText>Message de contact</TranslatedText>
+        </h2>
+        <button
+          onClick={closeContactModal}
+          className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+
+      {/* Contact Info */}
+      <div className="space-y-2 mb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          <strong><TranslatedText>Nom</TranslatedText>:</strong> {selectedContact.name}
+        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          <strong>Email:</strong> {selectedContact.email}
+        </p>
+        {selectedContact.phone && (
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            <strong><TranslatedText>Téléphone</TranslatedText>:</strong> {selectedContact.phone}
+          </p>
         )}
+        {selectedContact.service && (
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            <strong><TranslatedText>Objet</TranslatedText>:</strong> {selectedContact.service}
+          </p>
+        )}
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          <strong><TranslatedText>Date</TranslatedText>:</strong>{" "}
+          {new Date(selectedContact.createdAt).toLocaleString()}
+        </p>
+      </div>
+
+      {/* Message */}
+      <div className="mb-4 p-4 bg-gray-50 dark:bg-darkblack rounded-md border border-gray-200 dark:border-gray-700">
+        <p className="text-sm text-gray-900 dark:text-white whitespace-pre-line">
+          {selectedContact.message}
+        </p>
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-end space-x-2">
+        <button
+          onClick={closeContactModal}
+          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+        >
+          <TranslatedText>Fermer</TranslatedText>
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   );

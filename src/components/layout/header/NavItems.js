@@ -34,23 +34,24 @@ const NavItems = () => {
     },
     {
       id: 3,
-      name: <TranslatedText>Blog</TranslatedText>,
-      path: "/blogs",
+      name: <TranslatedText>Contact</TranslatedText>,
+      path: "/contact",
       dropdown: null,
       isRelative: false,
     },
     {
       id: 4,
-      name: <TranslatedText>Pages</TranslatedText>,
-      path: "/about",
-      dropdown: <DropdownPages />,
+      name: <TranslatedText>Services</TranslatedText>,
+      path: "/services",
+      dropdown: null,
       isRelative: false,
     },
+
     {
       id: 5,
       name: <TranslatedText>Cours</TranslatedText>,
       path: "/courses",
-      dropdown: <DropdownCourses />,
+      dropdown: null,
       isRelative: false,
     },
     ...(userExists
@@ -64,6 +65,17 @@ const NavItems = () => {
           },
         ]
       : []),
+      ...(!userExists
+      ? [
+          {
+            id: 7,
+            name: <TranslatedText>S’inscrire</TranslatedText>,
+            path: "/login",
+            dropdown: null,
+            isRelative: false,
+          }
+        ]      : []   
+          )
 
   ];
 

@@ -93,7 +93,7 @@ const PopularSubjects = () => {
       ),
     },
     {
-      title: <TranslatedText>Artiste et design</TranslatedText>,
+      title: <TranslatedText>Services Web</TranslatedText>,
       desc: (
         <TranslatedText>
           La création visuelle alliant expression artistique et esthétique
@@ -103,7 +103,7 @@ const PopularSubjects = () => {
       navButton: true,
       id: 2,
       path: "#",
-      category: "Art & Design",
+      category: "services-web",
       translate: true,
       image: virtualRealityImage,
       svg: (
@@ -165,17 +165,16 @@ const PopularSubjects = () => {
       ),
     },
     {
-      title: <TranslatedText>Apprentissage automatique</TranslatedText>,
-      desc: (
-        <TranslatedText>
-          Une technologie qui permet aux machines d'apprendre à partir des
-          données.
-        </TranslatedText>
-      ),
+title: <TranslatedText>Langue</TranslatedText>,
+desc: (
+  <TranslatedText>
+    Des cours de langue interactifs pour apprendre facilement et progresser à votre rythme.
+  </TranslatedText>
+),
       navButton: true,
       id: 3,
       path: "#",
-      category: "Development",
+      category: "langue",
       image: machineLearningImage,
       svg: (
         <div className="relative w-20 h-[60px]">
@@ -239,17 +238,16 @@ const PopularSubjects = () => {
       ),
     },
     {
-      title: <TranslatedText>Programmation</TranslatedText>,
-      desc: (
-        <TranslatedText>
-          Le processus de création d'instructions pour qu’un ordinateur exécute
-          des tâches.
-        </TranslatedText>
-      ),
+title: <TranslatedText>Photographie</TranslatedText>,
+desc: (
+  <TranslatedText>
+    L’art de capturer des moments uniques et de raconter des histoires à travers des images.
+  </TranslatedText>
+),
       navButton: true,
       id: 4,
       path: "#",
-      category: "Development",
+      category: "photographie",
       translate: true,
       image: artifitialImage,
       svg: (

@@ -7,7 +7,6 @@ import axios from "axios";
 
 const FeaturedSlider = () => {
   const [courses, setCourses] = useState([]);
-  const [instructor, setInstructor] = useState(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -16,7 +15,6 @@ const FeaturedSlider = () => {
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/allcourses-about`
         );
         setCourses(data.data || []);
-        setInstructor(data.instructor || null);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
         setCourses([]);
@@ -52,7 +50,7 @@ const FeaturedSlider = () => {
       {featuredCourses.map((course, idx) => (
         console.log(course),
         <SwiperSlide key={idx}>
-          <CourseCard type="primary" course={course} instructor={instructor} />
+          <CourseCard type="primary" course={course} instructor={course?.instructor} />
         </SwiperSlide>
       ))}
     </Swiper>

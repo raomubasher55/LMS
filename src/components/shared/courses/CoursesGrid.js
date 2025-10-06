@@ -1,6 +1,7 @@
 import CourseCard from "./CourseCard";
 
 const CoursesGrid = ({ courses, isNotSidebar }) => {
+  
   return (
     <div
       className={`grid grid-cols-1 ${
@@ -11,7 +12,7 @@ const CoursesGrid = ({ courses, isNotSidebar }) => {
     >
       {courses?.length ? (
         courses?.map((course, idx) => (
-          <CourseCard key={idx} course={course} type={"primaryMd"} />
+          <CourseCard key={idx} course={course} instructor={course?.instructor} type={"primaryMd"} />
         ))
       ) : (
         <span></span>

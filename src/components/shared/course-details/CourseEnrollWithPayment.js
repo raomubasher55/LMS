@@ -307,7 +307,7 @@ const CourseEnrollWithPayment = ({ course }) => {
 
         <span className="text-size-13 text-contentColor dark:text-contentColor-dark leading-1.8 block text-center">
           <i className="icofont-ui-rotation mr-1"></i>
-          {isFree ? "Free Forever Access" : "Secure Payment via MaxiCash"}
+          {isFree ? "Accès gratuit à vie" : "Paiement sécurisé via MaxiCash"}
         </span>
       </div>
 
@@ -483,6 +483,7 @@ const CourseEnrollWithPayment = ({ course }) => {
         </p>
         <button
           type="button"
+          onClick={() => router.push("/contact")}
           className="w-full text-xl text-primaryColor bg-whiteColor px-25px py-10px mb-10px font-bold leading-1.8 border border-primaryColor hover:text-whiteColor hover:bg-primaryColor inline-block rounded group dark:bg-whiteColor-dark dark:text-whiteColor dark:hover:bg-primaryColor"
         >
           <i className="icofont-ui-message mr-2"></i> <TranslatedText>Contacter le support</TranslatedText>

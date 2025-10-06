@@ -132,23 +132,23 @@ const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
     filterObject
   );
 
-  const getSortedCourses = (courses, sortInput) => {
-    if (!courses) return [];
-    switch (sortInput) {
-      case "Sort by New":
-        return [...courses].sort((a, b) => new Date(b.date) - new Date(a.date));
-      case "Title Ascending":
-        return [...courses].sort((a, b) => a?.title?.localeCompare(b?.title));
-      case "Title Descending":
-        return [...courses].sort((a, b) => b?.title?.localeCompare(a?.title));
-      case "Price Ascending":
-        return [...courses].sort((a, b) => a?.price - b?.price);
-      case "Price Descending":
-        return [...courses].sort((a, b) => b?.price - a?.price);
-      default:
-        return courses;
-    }
-  };
+const getSortedCourses = (courses, sortInput) => {
+  if (!courses) return [];
+  switch (sortInput) {
+    case "Trier par nouveau": // Sort by New
+      return [...courses].sort((a, b) => new Date(b.date) - new Date(a.date));
+    case "Titre croissant": // Title Ascending
+      return [...courses].sort((a, b) => a?.title?.localeCompare(b?.title));
+    case "Titre décroissant": // Title Descending
+      return [...courses].sort((a, b) => b?.title?.localeCompare(a?.title));
+    case "Prix croissant": // Price Ascending
+      return [...courses].sort((a, b) => a?.price - b?.price);
+    case "Prix décroissant": // Price Descending
+      return [...courses].sort((a, b) => b?.price - a?.price);
+    default:
+      return courses;
+  }
+};
 
   const courses = getSortedCourses(
     isSearch ? searchCourses : allFilteredCourses,
@@ -160,7 +160,6 @@ const CoursesPrimary = ({ isNotSidebar, isList, card }) => {
   const limit = 12;
   const totalPages = Math.ceil(totalCourses / limit);
   const paginationItems = [...Array(totalPages)];
-
   const tapButtons = [
     {
       name: <i className="icofont-layout"></i>,

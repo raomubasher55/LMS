@@ -44,13 +44,13 @@ const ContactPrimary = () => {
             </div>
             <div className="">
               <h3 className="text-2xl font-semibold text-blackColor dark:text-blackColor-dark leading-38px">
-                <TranslatedText>Adresse e-mail</TranslatedText>
+                <TranslatedText>Nos emails</TranslatedText>
               </h3>
               <p className="text-size-13 lg:text-size-15 text-contentColor dark:text-contentColor-dark leaing-5">
-                techbootmail@gmail.com
+                info@tangaacademie.com
               </p>
               <p className="text-size-15 text-contentColor dark:text-contentColor-dark leaing-26px">
-                998757478492
+                support@tangaacademie.com
               </p>
             </div>
           </div>
@@ -80,13 +80,16 @@ const ContactPrimary = () => {
             </div>
             <div className="">
               <h3 className="text-2xl font-semibold text-blackColor dark:text-blackColor-dark leading-38px">
-                <TranslatedText>Adresse du bureau</TranslatedText>
+                <TranslatedText>Adresse</TranslatedText>
               </h3>
               <p className="text-size-13 lg:text-size-15 text-contentColor dark:text-contentColor-dark leaing-5">
-                Digital Agency Network 2024
+                417, Av: Kimbondo/Quartier:
               </p>
               <p className="text-size-15 text-contentColor dark:text-contentColor-dark leaing-26px">
-                Eastbourne Terrace
+                Lingwala - Commune De
+              </p>
+              <p className="text-size-15 text-contentColor dark:text-contentColor-dark leaing-26px">
+                Bandalungwa/ Kinshasa RDC
               </p>
             </div>
           </div>
@@ -116,14 +119,12 @@ const ContactPrimary = () => {
             </div>
             <div className="">
               <h3 className="text-2xl font-semibold text-blackColor dark:text-blackColor-dark leading-38px">
-                <TranslatedText>Numéro de téléphone</TranslatedText>
+                <TranslatedText>Téléphone</TranslatedText>
               </h3>
               <p className="text-size-13 lg:text-size-15 text-contentColor dark:text-contentColor-dark leaing-5">
-                +880 123 456 789 , 99874
+                +243 899 685 999
               </p>
-              <p className="text-size-15 text-contentColor dark:text-contentColor-dark leaing-26px">
-                +880 123 456 789
-              </p>
+
             </div>
           </div>
         </div>
